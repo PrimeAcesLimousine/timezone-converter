@@ -343,7 +343,7 @@
     .tl-grid {
       display: grid;
       grid-template-columns: 28px repeat(24, 1fr);
-      row-gap: 3px;
+      gap: 1px;
     }
 
     .tl-lbl {
@@ -361,15 +361,15 @@
       border-radius: 3px;
       cursor: pointer;
       position: relative;
-      border: 1.5px solid transparent;
+      border: 1px solid rgba(0,0,0,0.10);
       transition: opacity 0.12s;
     }
     .tl-cell:hover { opacity: 0.65; }
 
-    /* Colours — modern pastels */
+    /* Colours — modern vibrant */
     .tl-sleep    { background: #e8e8e8; }
-    .tl-shoulder { background: #fde4a4; }
-    .tl-work     { background: #b8e8cc; }
+    .tl-shoulder { background: #eaaa37; }
+    .tl-work     { background: #40be79; }
 
     /* Selected column */
     .tl-cell.tl-sel { border-color: #111; }
