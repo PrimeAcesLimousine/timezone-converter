@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timezone Converter</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #f5f5f5;
+      color: #111;
+      min-height: 100vh;
+      padding: 48px 20px 80px;
+    }
+
+    .app { max-width: 820px; margin: 0 auto; }
+
+    /* ── Header ── */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #111;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 14px;
+      padding: 18px 20px 16px;
+      transition: border-color 0.18s, box-shadow 0.18s;
+      cursor: default;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card:hover         { border-color: #bbb; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+    .card.active-card   { border-color: #111; box-shadow: 0 2px 10px rgba(0,0,0,0.1);  }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .card-role {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #bbb;
+    }
+    .my-card .card-role { color: #111; }
+
+    /* Small filled dot for MY card */
+    .role-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #bbb;
+      flex-shrink: 0;
+    }
+    .my-card .role-dot { background: #111; }
+
+    .change-btn {
+      background: none;
+      border: none;
+      padding: 4px;
+      color: #ccc;
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: color 0.15s, background 0.15s;
+    }
+    .change-btn:hover { color: #555; background: #f5f5f5; }
+
+    /* Zone name line */
+    .zone-name {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .zn-city {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .zn-abbr {
+      font-size: 10px;
+      font-weight: 400;
+      font-style: italic;
+      color: #bbb;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Time display / edit ── */
+    .time-wrap { margin-bottom: 10px; position: relative; }
+
+    .time-display {
+      font-size: 42px;
+      font-weight: 200;
+      letter-spacing: -2.5px;
+      color: #111;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer;
+      display: inline-block;
+      line-height: 1;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.15s, opacity 0.15s;
+    }
+    .time-display:hover { border-bottom-color: #ddd; }
+
+    /* Native time input — shown only when editing */
+    .time-edit {
+      font-size: 42px;
+      font-weight: 200;
+      letter-spacing: -2.5px;
+      color: #111;
+      font-variant-numeric: tabular-nums;
+      border: none;
+      border-bottom: 2px solid #111;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      width: 152px;
+      display: none;
+      line-height: 1;
+    }
+    /* Suppress browser chrome on time input */
+    .time-edit::-webkit-inner-spin-button,
+    .time-edit::-webkit-clear-button,
+    .time-edit::-webkit-calendar-picker-indicator { display: none; -webkit-appearance: none; }
+
+    /* ── Card footer ── */
+    .card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    .date-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .date-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: #555;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      border-bottom: 1.5px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .date-text:hover { color: #111; border-bottom-color: #ddd; }
+
+    /* Date input — kept invisible in-DOM so showPicker() works */
+    .date-edit {
+      position: fixed;
+      opacity: 0;
+      pointer-events: none;
+      width: 1px;
+      height: 1px;
+    }
+
+    /* Day-difference badge: e.g. "+1d" or "−1d" */
+    .day-diff {
+      font-size: 10px;
+      font-weight: 600;
+      color: #888;
+      background: #f0f0f0;
+      border-radius: 4px;
+      padding: 1px 5px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .offset-text {
+      font-size: 11px;
+      color: #ccc;
+      flex-shrink: 0;
+    }
+
+    /* Date nav arrows */
+    .date-nav {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      background: none;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+      width: 24px;
+      height: 24px;
+      font-size: 13px;
+      color: #bbb;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .nav-btn:hover { border-color: #999; color: #111; }
+
+    /* ── Cards side-by-side ── */
+    .cards-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin-bottom: 14px;
+    }
+    .cards-row .card {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Swap column sitting between the two cards */
+    .swap-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+      flex-shrink: 0;
+    }
+    .swap-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid #e0e0e0;
+      background: #fff;
+      font-size: 14px;
+      color: #aaa;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      flex-shrink: 0;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .swap-btn:hover { border-color: #999; color: #111; }
+
+    /* Stack on narrow screens */
+    @media (max-width: 600px) {
+      .cards-row { flex-direction: column; }
+      .swap-col { flex-direction: row; padding: 8px 0; }
+      .swap-btn { transform: rotate(90deg); }
+    }
+
+    /* ── Live button ── */
+    .controls { display: none; } /* moved to header */
+    .live-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 18px;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #bbb;
+      background: #fff;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .live-btn.active { background: #111; border-color: #111; color: #fff; }
+    .live-pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+    @keyframes livePulse {
+      0%, 100% { opacity: 1;   transform: scale(1);    }
+      50%       { opacity: 0.3; transform: scale(0.65); }
+    }
+    .live-btn.active .live-pulse {
+      animation: livePulse 1.8s ease-in-out infinite;
+    }
+
+    /* ── Timeline strip ── */
+    .timeline {
+      margin-top: 14px;
+      background: #fff;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 14px;
+      padding: 16px 20px 14px;
+    }
+
+    .tl-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .tl-head-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #bbb;
+    }
+    .tl-head-hint {
+      font-size: 10px;
+      color: #ccc;
+    }
+
+    /* Grid: label col + 24 hour cols */
+    .tl-grid {
+      display: grid;
+      grid-template-columns: 28px repeat(24, 1fr);
+      row-gap: 3px;
+    }
+
+    .tl-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #ccc;
+      display: flex;
+      align-items: center;
+    }
+
+    .tl-cell {
+      height: 30px;
+      border-radius: 3px;
+      cursor: pointer;
+      position: relative;
+      border: 1.5px solid transparent;
+      transition: opacity 0.12s;
+    }
+    .tl-cell:hover { opacity: 0.65; }
+
+    /* Colours — modern pastels */
+    .tl-sleep    { background: #e8e8e8; }
+    .tl-shoulder { background: #fde4a4; }
+    .tl-work     { background: #b8e8cc; }
+
+    /* Selected column */
+    .tl-cell.tl-sel { border-color: #111; }
+    /* Top row selected: show a small notch above */
+    .tl-my-row .tl-cell.tl-sel::after {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid #111;
+    }
+
+    /* Connector row between MY and THEIR rows */
+    .tl-conn-cell {
+      height: 18px;
+      background: transparent;
+      position: relative;
+      pointer-events: none;
+    }
+    .tl-conn-cell.tl-conn-sel::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1.5px;
+      background: rgba(17, 17, 17, 0.22);
+      transform: translateX(-50%);
+    }
+
+    /* Date-change pip above THEIR row cells */
+    .tl-pip {
+      position: absolute;
+      bottom: calc(100% + 3px);
+      left: -1px;
+      font-size: 9px;
+      font-weight: 600;
+      color: #999;
+      white-space: nowrap;
+      pointer-events: none;
+      letter-spacing: 0.01em;
+    }
+
+    /* Hour axis */
+    .tl-axis-lbl { /* spacer */ }
+    .tl-axis-cell {
+      font-size: 9px;
+      color: #ccc;
+      text-align: center;
+      padding-top: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Legend */
+    .tl-legend {
+      display: flex;
+      gap: 14px;
+      margin-top: 10px;
+      padding-left: 28px;
+    }
+    .tl-legend span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #bbb;
+    }
+    .tl-dot {
+      width: 9px; height: 9px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* ── Zone picker (bottom sheet) ── */
+    .sheet-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.28);
+      z-index: 300;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .sheet-overlay.open { display: flex; }
+
+    .sheet {
+      background: #fff;
+      border-radius: 18px 18px 0 0;
+      padding: 16px 20px 36px;
+      width: 100%;
+      max-width: 460px;
+      max-height: 72vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sheet-handle {
+      width: 36px; height: 4px;
+      background: #e0e0e0; border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+
+    .sheet-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #bbb;
+      margin-bottom: 12px;
+    }
+
+    .sheet-search {
+      padding: 10px 14px;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      color: #111;
+      margin-bottom: 8px;
+      transition: border-color 0.15s;
+    }
+    .sheet-search:focus { border-color: #999; box-shadow: 0 0 0 3px rgba(17,17,17,0.07); }
+    .sheet-search::placeholder { color: #ccc; }
+
+    .sheet-list { overflow-y: auto; flex: 1; }
+    .sheet-list::-webkit-scrollbar { width: 3px; }
+    .sheet-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+
+    .sheet-item {
+      padding: 10px 6px;
+      border-bottom: 1px solid #f4f4f4;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #111;
+      border-radius: 6px;
+      transition: background 0.1s, padding-left 0.1s;
+    }
+    .sheet-item:hover { background: #fafafa; padding-left: 10px; }
+    .sheet-item .si-right { display: flex; align-items: center; gap: 8px; }
+    .sheet-item .si-abbr  { font-size: 11px; color: #ccc; }
+    .sheet-item .si-off   { font-size: 11px; color: #ccc; }
+    .sheet-empty {
+      padding: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: #bbb;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="app-header">
+    <h1>Timezone Converter</h1>
+    <button class="live-btn active" id="liveBtn" onclick="toggleLive()">
+      <span class="live-pulse"></span>
+      Live
+    </button>
+  </div>
+
+  <div class="cards-row">
+
+  <!-- ── MY TIME ── -->
+  <div class="card my-card active-card" id="myCard" onclick="setActive('my')">
+    <div class="card-head">
+      <div class="card-role">
+        <span class="role-dot"></span>
+        My time
+      </div>
+      <button class="change-btn" onclick="openSheet('my')" title="Change timezone">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.5 2L12 4.5L5 11.5H2.5V9L9.5 2Z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="zone-name" id="myZoneName">—</div>
+    <div class="time-wrap">
+      <span  class="time-display" id="myDisp"  onclick="startTimeEdit('my')">00:00</span>
+      <input class="time-edit"    id="myEdit"  type="time" />
+    </div>
+    <div class="card-foot">
+      <div class="date-group">
+        <span  class="date-text" id="myDate"     onclick="startDateEdit('my')">—</span>
+        <input class="date-edit" id="myDateEdit" type="date" />
+        <span class="offset-text" id="myOff">—</span>
+      </div>
+      <div class="date-nav">
+        <button class="nav-btn" onclick="shiftDate(-1,'my')" title="Previous day">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2L3.5 5L6.5 8"/></svg>
+        </button>
+        <button class="nav-btn" onclick="shiftDate(+1,'my')" title="Next day">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2L6.5 5L3.5 8"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SWAP ── -->
+  <div class="swap-col">
+    <button class="swap-btn" onclick="swapZones()" title="Swap zones">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.5 5h10M9.5 2.5L12 5L9.5 7.5"/>
+        <path d="M12.5 10H2.5M5.5 7.5L3 10L5.5 12.5"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ── THEIR TIME ── -->
+  <div class="card" id="theirCard" onclick="setActive('their')">
+    <div class="card-head">
+      <div class="card-role">
+        <span class="role-dot"></span>
+        Their time
+      </div>
+      <button class="change-btn" onclick="openSheet('their')" title="Change timezone">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.5 2L12 4.5L5 11.5H2.5V9L9.5 2Z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="zone-name" id="theirZoneName">—</div>
+    <div class="time-wrap">
+      <span  class="time-display" id="theirDisp"  onclick="startTimeEdit('their')">00:00</span>
+      <input class="time-edit"    id="theirEdit"  type="time" />
+    </div>
+    <div class="card-foot">
+      <div class="date-group">
+        <span  class="date-text" id="theirDate"     onclick="startDateEdit('their')">—</span>
+        <input class="date-edit" id="theirDateEdit" type="date" />
+        <span  class="day-diff"  id="theirDiff"     style="display:none"></span>
+        <span  class="offset-text" id="theirOff">—</span>
+      </div>
+      <div class="date-nav">
+        <button class="nav-btn" onclick="shiftDate(-1,'their')" title="Previous day">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 2L3.5 5L6.5 8"/></svg>
+        </button>
+        <button class="nav-btn" onclick="shiftDate(+1,'their')" title="Next day">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2L6.5 5L3.5 8"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /.cards-row -->
+
+  <!-- ── LIVE (legacy slot, hidden) ── -->
+
+  <!-- ── TIMELINE ── -->
+  <div class="timeline" id="timeline"></div>
+
+</div>
+
+<!-- ── ZONE PICKER SHEET ── -->
+<div class="sheet-overlay" id="sheetOverlay" onclick="handleOverlayClick(event)">
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheetTitle">Select timezone</div>
+    <input class="sheet-search" id="sheetSearch" type="text"
+           placeholder="Search city or timezone…"
+           autocomplete="off" spellcheck="false" />
+    <div class="sheet-list" id="sheetList"></div>
+  </div>
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────────
+const TZ_LIST = [
+  { id:'America/New_York',              label:'New York',           abbr:'ET'   },
+  { id:'America/Chicago',               label:'Chicago',            abbr:'CT'   },
+  { id:'America/Denver',                label:'Denver',             abbr:'MT'   },
+  { id:'America/Los_Angeles',           label:'Los Angeles',        abbr:'PT'   },
+  { id:'America/Phoenix',               label:'Phoenix',            abbr:'MST'  },
+  { id:'America/Anchorage',             label:'Anchorage',          abbr:'AKT'  },
+  { id:'Pacific/Honolulu',              label:'Honolulu',           abbr:'HST'  },
+  { id:'America/Toronto',               label:'Toronto',            abbr:''     },
+  { id:'America/Vancouver',             label:'Vancouver',          abbr:''     },
+  { id:'America/Mexico_City',           label:'Mexico City',        abbr:''     },
+  { id:'America/Bogota',                label:'Bogotá',             abbr:''     },
+  { id:'America/Lima',                  label:'Lima',               abbr:''     },
+  { id:'America/Sao_Paulo',             label:'São Paulo',          abbr:''     },
+  { id:'America/Argentina/Buenos_Aires',label:'Buenos Aires',       abbr:''     },
+  { id:'America/Santiago',              label:'Santiago',           abbr:''     },
+  { id:'Europe/London',                 label:'London',             abbr:'GMT'  },
+  { id:'Europe/Dublin',                 label:'Dublin',             abbr:''     },
+  { id:'Europe/Lisbon',                 label:'Lisbon',             abbr:''     },
+  { id:'Europe/Paris',                  label:'Paris',              abbr:'CET'  },
+  { id:'Europe/Berlin',                 label:'Berlin',             abbr:''     },
+  { id:'Europe/Amsterdam',              label:'Amsterdam',          abbr:''     },
+  { id:'Europe/Brussels',               label:'Brussels',           abbr:''     },
+  { id:'Europe/Madrid',                 label:'Madrid',             abbr:''     },
+  { id:'Europe/Rome',                   label:'Rome',               abbr:''     },
+  { id:'Europe/Zurich',                 label:'Zurich',             abbr:''     },
+  { id:'Europe/Vienna',                 label:'Vienna',             abbr:''     },
+  { id:'Europe/Stockholm',              label:'Stockholm',          abbr:''     },
+  { id:'Europe/Oslo',                   label:'Oslo',               abbr:''     },
+  { id:'Europe/Copenhagen',             label:'Copenhagen',         abbr:''     },
+  { id:'Europe/Helsinki',               label:'Helsinki',           abbr:'EET'  },
+  { id:'Europe/Warsaw',                 label:'Warsaw',             abbr:''     },
+  { id:'Europe/Athens',                 label:'Athens',             abbr:'EET'  },
+  { id:'Europe/Bucharest',              label:'Bucharest',          abbr:''     },
+  { id:'Europe/Istanbul',               label:'Istanbul',           abbr:''     },
+  { id:'Europe/Moscow',                 label:'Moscow',             abbr:'MSK'  },
+  { id:'Africa/Cairo',                  label:'Cairo',              abbr:''     },
+  { id:'Africa/Lagos',                  label:'Lagos',              abbr:''     },
+  { id:'Africa/Nairobi',                label:'Nairobi',            abbr:'EAT'  },
+  { id:'Africa/Johannesburg',           label:'Johannesburg',       abbr:'SAST' },
+  { id:'Africa/Casablanca',             label:'Casablanca',         abbr:''     },
+  { id:'Asia/Tehran',                   label:'Tehran',             abbr:'IRST' },
+  { id:'Asia/Dubai',                    label:'Dubai',              abbr:'GST'  },
+  { id:'Asia/Riyadh',                   label:'Riyadh',             abbr:''     },
+  { id:'Asia/Karachi',                  label:'Karachi',            abbr:'PKT'  },
+  { id:'Asia/Kolkata',                  label:'Mumbai / Delhi',     abbr:'IST'  },
+  { id:'Asia/Colombo',                  label:'Sri Lanka / Colombo',abbr:''     },
+  { id:'Asia/Kathmandu',                label:'Kathmandu / Nepal',  abbr:'NPT'  },
+  { id:'Asia/Dhaka',                    label:'Dhaka',              abbr:'BST'  },
+  { id:'Asia/Yangon',                   label:'Yangon',             abbr:'MMT'  },
+  { id:'Asia/Bangkok',                  label:'Bangkok',            abbr:'ICT'  },
+  { id:'Asia/Bangkok',                  label:'Hanoi',              abbr:'ICT'  },
+  { id:'Asia/Bangkok',                  label:'Phnom Penh',         abbr:'ICT'  },
+  { id:'Asia/Ho_Chi_Minh',              label:'Ho Chi Minh City',   abbr:''     },
+  { id:'Asia/Singapore',                label:'Singapore',          abbr:'SGT'  },
+  { id:'Asia/Brunei',                   label:'Brunei',             abbr:'BNT'  },
+  { id:'Asia/Kuala_Lumpur',             label:'Kuala Lumpur',       abbr:''     },
+  { id:'Asia/Jakarta',                  label:'Jakarta',            abbr:'WIB'  },
+  { id:'Asia/Jakarta',                  label:'Batam',              abbr:'WIB'  },
+  { id:'Asia/Makassar',                 label:'Bali / Makassar',    abbr:'WITA' },
+  { id:'Asia/Jayapura',                 label:'Papua / Jayapura',   abbr:'WIT'  },
+  { id:'Asia/Manila',                   label:'Manila',             abbr:'PHT'  },
+  { id:'Asia/Hong_Kong',                label:'Hong Kong',          abbr:'HKT'  },
+  { id:'Asia/Shanghai',                 label:'Beijing / Shanghai', abbr:'CST'  },
+  { id:'Asia/Taipei',                   label:'Taipei',             abbr:''     },
+  { id:'Asia/Seoul',                    label:'Seoul',              abbr:'KST'  },
+  { id:'Asia/Tokyo',                    label:'Tokyo',              abbr:'JST'  },
+  { id:'Australia/Perth',               label:'Perth',              abbr:'AWST' },
+  { id:'Australia/Darwin',              label:'Darwin',             abbr:'ACST' },
+  { id:'Australia/Brisbane',            label:'Brisbane',           abbr:'AEST' },
+  { id:'Australia/Sydney',              label:'Sydney',             abbr:'AEST' },
+  { id:'Australia/Melbourne',           label:'Melbourne',          abbr:''     },
+  { id:'Australia/Adelaide',            label:'Adelaide',           abbr:''     },
+  { id:'Pacific/Auckland',              label:'Auckland',           abbr:'NZST' },
+  { id:'Pacific/Fiji',                  label:'Fiji',               abbr:'FJT'  },
+  { id:'UTC',                           label:'UTC',                abbr:'UTC'  },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const browserTz  = Intl.DateTimeFormat().resolvedOptions().timeZone;
+let myZone       = browserTz;
+let theirZone    = browserTz === 'America/New_York' ? 'Asia/Singapore' : 'America/New_York';
+let currentDate  = new Date();
+let isLive       = true;
+let ticker       = null;
+let pickerFor    = null;  // 'my' | 'their'
+let activeCard   = 'my';  // 'my' | 'their'
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const pad = n => String(n).padStart(2, '0');
+
+function getLocalParts(date, tzId) {
+  // Returns { year, month, day, hour, minute } in tzId
+  const p = new Intl.DateTimeFormat('en-US', {
+    timeZone: tzId,
+    year: 'numeric', month: 'numeric', day: 'numeric',
+    hour: 'numeric', minute: 'numeric', hour12: false,
+  }).formatToParts(date);
+  const g = t => parseInt(p.find(x => x.type === t).value);
+  return { year: g('year'), month: g('month'), day: g('day'),
+           hour: g('hour') % 24, minute: g('minute') };
+}
+
+function getOffsetMins(tzId, date) {
+  // Returns UTC offset in minutes for tzId at `date`
+  const raw = new Intl.DateTimeFormat('en', {
+    timeZone: tzId, timeZoneName: 'shortOffset',
+  }).formatToParts(date).find(p => p.type === 'timeZoneName')?.value || 'GMT';
+  const m = raw.match(/GMT([+-])(\d+)(?::(\d+))?/);
+  if (!m) return 0;
+  return (m[1] === '+' ? 1 : -1) * (parseInt(m[2]) * 60 + parseInt(m[3] || '0'));
+}
+
+function getOffsetStr(tzId, date) {
+  return new Intl.DateTimeFormat('en', {
+    timeZone: tzId, timeZoneName: 'shortOffset',
+  }).formatToParts(date).find(p => p.type === 'timeZoneName')?.value || 'UTC';
+}
+
+function zonedToUTC(year, month, day, hour, minute, tzId) {
+  // Two-pass conversion to handle DST correctly
+  const rough  = new Date(Date.UTC(year, month - 1, day, hour, minute));
+  const off1   = getOffsetMins(tzId, rough);
+  const guess  = new Date(rough.getTime() - off1 * 60000);
+  const off2   = getOffsetMins(tzId, guess);
+  return new Date(rough.getTime() - off2 * 60000);
+}
+
+function fmtDate(date, tzId) {
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: tzId, weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+  }).format(date);
+}
+
+function tzDisplayName(tzId, date = new Date()) {
+  const t        = TZ_LIST.find(z => z.id === tzId);
+  const label    = t ? t.label : tzId.split('/').pop().replace(/_/g, ' ');
+  const longName = new Intl.DateTimeFormat('en', {
+    timeZone: tzId, timeZoneName: 'long',
+  }).formatToParts(date).find(p => p.type === 'timeZoneName')?.value || '';
+  return longName
+    ? `<span class="zn-city">${label}</span><span class="zn-abbr">${longName}</span>`
+    : `<span class="zn-city">${label}</span>`;
+}
+
+function setActive(which) {
+  activeCard = which;
+  document.getElementById('myCard').classList.toggle('active-card',    which === 'my');
+  document.getElementById('theirCard').classList.toggle('active-card', which === 'their');
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  const now = currentDate;
+
+  // MY card
+  const myP = getLocalParts(now, myZone);
+  document.getElementById('myZoneName').innerHTML   = tzDisplayName(myZone, now);
+  document.getElementById('myDisp').textContent     = `${pad(myP.hour)}:${pad(myP.minute)}`;
+  document.getElementById('myDate').textContent     = fmtDate(now, myZone);
+  document.getElementById('myOff').textContent      = getOffsetStr(myZone, now);
+
+  // THEIR card
+  const theirP = getLocalParts(now, theirZone);
+  document.getElementById('theirZoneName').innerHTML   = tzDisplayName(theirZone, now);
+  document.getElementById('theirDisp').textContent     = `${pad(theirP.hour)}:${pad(theirP.minute)}`;
+  document.getElementById('theirDate').textContent     = fmtDate(now, theirZone);
+  document.getElementById('theirOff').textContent      = getOffsetStr(theirZone, now);
+
+  // Timeline
+  renderTimeline();
+
+  // Day-diff badge: show +Nd / −Nd relative to MY date
+  const myDay    = Date.UTC(myP.year, myP.month - 1, myP.day);
+  const theirDay = Date.UTC(theirP.year, theirP.month - 1, theirP.day);
+  const diff     = (theirDay - myDay) / 86400000;
+  const badge    = document.getElementById('theirDiff');
+  if (diff !== 0) {
+    badge.textContent    = diff > 0 ? `+${diff}d` : `${diff}d`;
+    badge.style.display  = 'inline-block';
+  } else {
+    badge.style.display  = 'none';
+  }
+}
+
+// ── Time editing ──────────────────────────────────────────────────────────────
+function startTimeEdit(which) {
+  stopLive(); setActive(which);
+  const tz   = which === 'my' ? myZone : theirZone;
+  const disp = document.getElementById(`${which}Disp`);
+  const inp  = document.getElementById(`${which}Edit`);
+  const p    = getLocalParts(currentDate, tz);
+  inp.value  = `${pad(p.hour)}:${pad(p.minute)}`;
+  disp.style.display = 'none';
+  inp.style.display  = 'inline-block';
+  inp.focus();
+}
+
+function commitTimeEdit(which) {
+  const tz   = which === 'my' ? myZone : theirZone;
+  const disp = document.getElementById(`${which}Disp`);
+  const inp  = document.getElementById(`${which}Edit`);
+  if (inp.value) {
+    const [hh, mm] = inp.value.split(':').map(Number);
+    const p = getLocalParts(currentDate, tz);
+    currentDate = zonedToUTC(p.year, p.month, p.day, hh, mm, tz);
+  }
+  inp.style.display  = 'none';
+  disp.style.display = 'inline-block';
+  render();
+}
+
+['my', 'their'].forEach(w => {
+  const inp = document.getElementById(`${w}Edit`);
+  inp.addEventListener('blur',   () => commitTimeEdit(w));
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter')  inp.blur();
+    if (e.key === 'Escape') {
+      inp.style.display  = 'none';
+      document.getElementById(`${w}Disp`).style.display = 'inline-block';
+      render();
+    }
+  });
+});
+
+// ── Date editing ──────────────────────────────────────────────────────────────
+function startDateEdit(which) {
+  stopLive(); setActive(which);
+  const tz  = which === 'my' ? myZone : theirZone;
+  const inp = document.getElementById(`${which}DateEdit`);
+  const p   = getLocalParts(currentDate, tz);
+  inp.value = `${p.year}-${pad(p.month)}-${pad(p.day)}`;
+  try { inp.showPicker(); } catch(e) { inp.click(); }
+}
+
+function commitDateEdit(which) {
+  const tz  = which === 'my' ? myZone : theirZone;
+  const inp = document.getElementById(`${which}DateEdit`);
+  if (inp.value) {
+    const [y, m, d] = inp.value.split('-').map(Number);
+    const p = getLocalParts(currentDate, tz);
+    currentDate = zonedToUTC(y, m, d, p.hour, p.minute, tz);
+  }
+  render();
+}
+
+['my', 'their'].forEach(w => {
+  const inp = document.getElementById(`${w}DateEdit`);
+  inp.addEventListener('change', () => commitDateEdit(w));
+});
+
+// ── Date navigation ───────────────────────────────────────────────────────────
+function shiftDate(days, which) {
+  stopLive(); setActive(which);
+  const tz = which === 'my' ? myZone : theirZone;
+  const p  = getLocalParts(currentDate, tz);
+  currentDate = zonedToUTC(p.year, p.month, p.day + days, p.hour, p.minute, tz);
+  render();
+}
+
+// ── Swap ──────────────────────────────────────────────────────────────────────
+function swapZones() {
+  [myZone, theirZone] = [theirZone, myZone];
+  render();
+}
+
+// ── Live mode ─────────────────────────────────────────────────────────────────
+function startLive() {
+  if (ticker) clearInterval(ticker);
+  isLive = true;
+  ticker = setInterval(() => { currentDate = new Date(); render(); }, 1000);
+  const btn = document.getElementById('liveBtn');
+  btn.classList.add('active');
+  btn.innerHTML = '<span class="live-pulse"></span> Live';
+}
+
+function stopLive() {
+  if (!isLive) return;
+  clearInterval(ticker); ticker = null; isLive = false;
+  const btn = document.getElementById('liveBtn');
+  btn.classList.remove('active');
+  btn.innerHTML = '<span class="live-pulse"></span> Set live';
+}
+
+function toggleLive() {
+  if (isLive) { stopLive(); }
+  else { currentDate = new Date(); startLive(); render(); }
+}
+
+// ── Zone picker ───────────────────────────────────────────────────────────────
+function openSheet(which) {
+  pickerFor = which; setActive(which);
+  document.getElementById('sheetTitle').textContent =
+    which === 'my' ? 'My Timezone' : 'Their Timezone';
+  document.getElementById('sheetSearch').value = '';
+  renderSheetList('');
+  document.getElementById('sheetOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('sheetSearch').focus(), 80);
+}
+
+function closeSheet() {
+  document.getElementById('sheetOverlay').classList.remove('open');
+  pickerFor = null;
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('sheetOverlay')) closeSheet();
+}
+
+function renderSheetList(query) {
+  const q    = query.trim().toLowerCase();
+  const list = document.getElementById('sheetList');
+  const now  = new Date();
+
+  const hits = TZ_LIST.filter(z =>
+    z.label.toLowerCase().includes(q) ||
+    z.id.toLowerCase().includes(q) ||
+    (z.abbr && z.abbr.toLowerCase().includes(q))
+  );
+
+  if (!hits.length) {
+    list.innerHTML = '<div class="sheet-empty">No results</div>';
+    return;
+  }
+
+  list.innerHTML = hits.map(z => {
+    const off = getOffsetStr(z.id, now);
+    return `
+      <div class="sheet-item" onclick="selectZone('${z.id}')">
+        <span>${z.label}</span>
+        <span class="si-right">
+          ${z.abbr ? `<span class="si-abbr">${z.abbr}</span>` : ''}
+          <span class="si-off">${off}</span>
+        </span>
+      </div>`;
+  }).join('');
+}
+
+function selectZone(tzId) {
+  if (pickerFor === 'my') myZone = tzId;
+  else theirZone = tzId;
+  closeSheet();
+  render();
+}
+
+document.getElementById('sheetSearch').addEventListener('input', e =>
+  renderSheetList(e.target.value)
+);
+
+// ── Timeline ──────────────────────────────────────────────────────────────────
+function slotClass(hour) {
+  if (hour <= 6 || hour >= 22)        return 'tl-sleep';
+  if ((hour >= 7  && hour <= 8) ||
+      (hour >= 19 && hour <= 21))     return 'tl-shoulder';
+  return 'tl-work';                   // 9–18
+}
+
+function renderTimeline() {
+  const tl = document.getElementById('timeline');
+  if (!tl) return;
+
+  const now = currentDate;
+  const myP = getLocalParts(now, myZone);
+  const selHour = myP.hour;
+
+  // Midnight of today in MY timezone (anchor for all 24 columns)
+  const dayStart = zonedToUTC(myP.year, myP.month, myP.day, 0, 0, myZone);
+
+  const myAbbr    = TZ_LIST.find(z => z.id === myZone)?.abbr    || myZone.split('/').pop().slice(0, 4);
+  const theirAbbr = TZ_LIST.find(z => z.id === theirZone)?.abbr || theirZone.split('/').pop().slice(0, 4);
+
+  // Build cell HTML for each row
+  let myHTML    = `<div class="tl-lbl">${myAbbr}</div>`;
+  let connHTML  = `<div class="tl-lbl"></div>`;
+  let theirHTML = `<div class="tl-lbl" style="position:relative">${theirAbbr}</div>`;
+  let axisHTML  = `<div class="tl-axis-lbl"></div>`;
+
+  let prevTheirDate = null;
+
+  for (let h = 0; h < 24; h++) {
+    const colUTC = new Date(dayStart.getTime() + h * 3600_000);
+    const tp     = getLocalParts(colUTC, theirZone);
+    const sel    = h === selHour;
+
+    // MY row cell
+    myHTML += `<div class="tl-cell ${slotClass(h)}${sel ? ' tl-sel' : ''}"
+                    onclick="jumpToHour(${h})" title="${pad(h)}:00 ${myAbbr}"></div>`;
+
+    // Connector row cell
+    connHTML += `<div class="tl-conn-cell${sel ? ' tl-conn-sel' : ''}"></div>`;
+
+    // THEIR row cell — with date-change pip
+    const theirDateKey = `${tp.year}-${tp.month}-${tp.day}`;
+    let pip = '';
+    if (prevTheirDate !== null && theirDateKey !== prevTheirDate) {
+      const label = new Intl.DateTimeFormat('en-US', {
+        timeZone: theirZone, month: 'short', day: 'numeric'
+      }).format(colUTC);
+      pip = `<span class="tl-pip">${label}</span>`;
+    }
+    prevTheirDate = theirDateKey;
+
+    theirHTML += `<div class="tl-cell ${slotClass(tp.hour)}${sel ? ' tl-sel' : ''}"
+                       onclick="jumpToHour(${h})"
+                       title="${pad(tp.hour)}:00 ${theirAbbr}"
+                       style="position:relative">${pip}</div>`;
+
+    // Axis: label every 6 h
+    axisHTML += `<div class="tl-axis-cell">${h % 6 === 0 ? pad(h) : ''}</div>`;
+  }
+
+  tl.innerHTML = `
+    <div class="tl-head">
+      <span class="tl-head-label">24-hour overview</span>
+      <span class="tl-head-hint">click any hour to jump</span>
+    </div>
+    <div class="tl-grid tl-my-row">${myHTML}</div>
+    <div class="tl-grid">${connHTML}</div>
+    <div class="tl-grid tl-their-row">${theirHTML}</div>
+    <div class="tl-grid">${axisHTML}</div>
+    <div class="tl-legend">
+      <span><span class="tl-dot" style="background:#e8e8e8"></span>Sleeping</span>
+      <span><span class="tl-dot" style="background:#fde4a4"></span>Off-peak</span>
+      <span><span class="tl-dot" style="background:#b8e8cc"></span>Working</span>
+    </div>`;
+}
+
+function jumpToHour(hour) {
+  stopLive();
+  const p = getLocalParts(currentDate, myZone);
+  currentDate = zonedToUTC(p.year, p.month, p.day, hour, 0, myZone);
+  render();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+render();
+startLive();
+</script>
+</body>
+</html>
