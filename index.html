@@ -4,13 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Timezone Converter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      background: #f5f5f5;
-      color: #111;
+      font-family: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F8F8F8;
+      color: #404040;
       min-height: 100vh;
       padding: 48px 20px 80px;
     }
@@ -32,7 +35,7 @@
     .app-logo {
       width: 34px;
       height: 34px;
-      background: #0a0a0a;
+      background: #0C0C0C;
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -44,21 +47,21 @@
       font-weight: 300;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: #111;
+      color: #404040;
     }
 
     /* ── Cards ── */
     .card {
       background: #fff;
-      border: 1.5px solid #e0e0e0;
+      border: 1.5px solid #D8D8D8;
       border-radius: 14px;
       padding: 18px 20px 16px;
       transition: border-color 0.18s, box-shadow 0.18s;
       cursor: default;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .card:hover         { border-color: #bbb; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-    .card.active-card   { border-color: #B6a269; box-shadow: 0 2px 10px rgba(182,162,105,0.2);  }
+    .card:hover         { border-color: #BEBEBE; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+    .card.active-card   { border-color: #B8A882; box-shadow: 0 2px 10px rgba(184,168,130,0.2);  }
 
     .card-head {
       display: flex;
@@ -75,25 +78,25 @@
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #bbb;
+      color: #BEBEBE;
     }
-    .my-card .card-role { color: #B6a269; }
+    .my-card .card-role { color: #B8A882; }
 
     /* Small filled dot for MY card */
     .role-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #bbb;
+      background: #BEBEBE;
       flex-shrink: 0;
     }
-    .my-card .role-dot { background: #B6a269; }
+    .my-card .role-dot { background: #B8A882; }
 
     .change-btn {
       background: none;
       border: none;
       padding: 4px;
-      color: #ccc;
+      color: #CECECE;
       cursor: pointer;
       border-radius: 6px;
       display: flex;
@@ -102,7 +105,7 @@
       flex-shrink: 0;
       transition: color 0.15s, background 0.15s;
     }
-    .change-btn:hover { color: #555; background: #f5f5f5; }
+    .change-btn:hover { color: #595959; background: #f5f5f5; }
 
     /* Zone name line */
     .zone-name {
@@ -115,7 +118,7 @@
     .zn-city {
       font-size: 14px;
       font-weight: 600;
-      color: #333;
+      color: #404040;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -124,7 +127,7 @@
       font-size: 10px;
       font-weight: 400;
       font-style: italic;
-      color: #bbb;
+      color: #BEBEBE;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -137,7 +140,7 @@
       font-size: 42px;
       font-weight: 200;
       letter-spacing: -2.5px;
-      color: #111;
+      color: #404040;
       font-variant-numeric: tabular-nums;
       cursor: pointer;
       display: inline-block;
@@ -145,17 +148,17 @@
       border-bottom: 2px solid transparent;
       transition: border-color 0.15s, opacity 0.15s;
     }
-    .time-display:hover { border-bottom-color: #ddd; }
+    .time-display:hover { border-bottom-color: #D8D8D8; }
 
     /* Native time input — shown only when editing */
     .time-edit {
       font-size: 42px;
       font-weight: 200;
       letter-spacing: -2.5px;
-      color: #111;
+      color: #404040;
       font-variant-numeric: tabular-nums;
       border: none;
-      border-bottom: 2px solid #111;
+      border-bottom: 2px solid #404040;
       outline: none;
       background: transparent;
       font-family: inherit;
@@ -188,7 +191,7 @@
     .date-text {
       font-size: 14px;
       font-weight: 400;
-      color: #555;
+      color: #595959;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -196,7 +199,7 @@
       border-bottom: 1.5px solid transparent;
       transition: color 0.15s, border-color 0.15s;
     }
-    .date-text:hover { color: #111; border-bottom-color: #ddd; }
+    .date-text:hover { color: #404040; border-bottom-color: #D8D8D8; }
 
     /* Date input — kept invisible in-DOM so showPicker() works */
     .date-edit {
@@ -211,8 +214,8 @@
     .day-diff {
       font-size: 11px;
       font-weight: 700;
-      color: #92580a;
-      background: #fde9b8;
+      color: #8A6530;
+      background: #EDE0C0;
       border-radius: 6px;
       padding: 3px 7px;
       flex-shrink: 0;
@@ -221,8 +224,8 @@
       margin-bottom: 4px;
     }
     .day-diff.ahead {
-      color: #5a4a1a;
-      background: #ede0c0;
+      color: #595959;
+      background: #D8D8D8;
     }
 
     .offset-block {
@@ -237,13 +240,13 @@
       font-size: 8px;
       font-weight: 700;
       letter-spacing: 0.1em;
-      color: #bbb;
+      color: #BEBEBE;
       text-transform: uppercase;
     }
     .offset-text {
       font-size: 13px;
       font-weight: 600;
-      color: #555;
+      color: #595959;
       flex-shrink: 0;
     }
 
@@ -255,19 +258,19 @@
     }
     .nav-btn {
       background: none;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #D8D8D8;
       border-radius: 5px;
       width: 24px;
       height: 24px;
       font-size: 13px;
-      color: #bbb;
+      color: #BEBEBE;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: border-color 0.15s, color 0.15s;
     }
-    .nav-btn:hover { border-color: #999; color: #111; }
+    .nav-btn:hover { border-color: #979797; color: #404040; }
 
     /* ── Cards side-by-side ── */
     .cards-row {
@@ -296,10 +299,10 @@
       width: 30px;
       height: 30px;
       border-radius: 50%;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #D8D8D8;
       background: #fff;
       font-size: 14px;
-      color: #aaa;
+      color: #ABABAB;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -308,7 +311,7 @@
       flex-shrink: 0;
       transition: border-color 0.15s, color 0.15s;
     }
-    .swap-btn:hover { border-color: #999; color: #111; }
+    .swap-btn:hover { border-color: #979797; color: #404040; }
 
     /* Stack on narrow screens */
     @media (max-width: 600px) {
@@ -324,16 +327,16 @@
       align-items: center;
       gap: 6px;
       padding: 7px 18px;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #D8D8D8;
       border-radius: 20px;
       font-size: 12px;
-      color: #bbb;
+      color: #BEBEBE;
       background: #fff;
       cursor: pointer;
       font-family: inherit;
       transition: all 0.15s;
     }
-    .live-btn.active { background: #0a0a0a; border-color: #0a0a0a; color: #fff; }
+    .live-btn.active { background: #0C0C0C; border-color: #0C0C0C; color: #fff; }
     .live-pulse {
       width: 6px;
       height: 6px;
@@ -353,7 +356,7 @@
     .timeline {
       margin-top: 14px;
       background: #fff;
-      border: 1.5px solid #e0e0e0;
+      border: 1.5px solid #D8D8D8;
       border-radius: 14px;
       padding: 16px 20px 14px;
     }
@@ -369,7 +372,7 @@
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #bbb;
+      color: #BEBEBE;
     }
     .tl-head-hint { display: none; }
 
@@ -385,7 +388,7 @@
       font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #ccc;
+      color: #CECECE;
       display: flex;
       align-items: center;
     }
@@ -420,8 +423,8 @@
       transform: translate(-50%, -50%);
       width: 11px; height: 11px;
       border-radius: 50%;
-      background: #B6a269;
-      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(182,162,105,0.4);
+      background: #B8A882;
+      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(184,168,130,0.4);
       z-index: 2;
     }
 
@@ -437,7 +440,7 @@
       position: absolute;
       left: 50%; top: 0; bottom: 0;
       width: 2px;
-      background: #B6a269;
+      background: #B8A882;
       transform: translateX(-50%);
       z-index: 2;
     }
@@ -450,8 +453,8 @@
       transform: translate(-50%, -50%);
       width: 11px; height: 11px;
       border-radius: 50%;
-      background: #B6a269;
-      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(182,162,105,0.4);
+      background: #B8A882;
+      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(184,168,130,0.4);
       z-index: 2;
     }
 
@@ -462,7 +465,7 @@
       left: -1px;
       font-size: 9px;
       font-weight: 600;
-      color: #999;
+      color: #979797;
       white-space: nowrap;
       pointer-events: none;
       letter-spacing: 0.01em;
@@ -472,7 +475,7 @@
     .tl-axis-lbl { /* spacer */ }
     .tl-axis-cell {
       font-size: 9px;
-      color: #ccc;
+      color: #CECECE;
       text-align: center;
       padding-top: 4px;
       font-variant-numeric: tabular-nums;
@@ -491,7 +494,7 @@
       font-weight: 600;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: #bbb;
+      color: #BEBEBE;
     }
     .tl-dot {
       width: 9px; height: 9px;
@@ -524,7 +527,7 @@
 
     .sheet-handle {
       width: 36px; height: 4px;
-      background: #e0e0e0; border-radius: 2px;
+      background: #D8D8D8; border-radius: 2px;
       margin: 0 auto 16px;
     }
 
@@ -533,49 +536,49 @@
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #bbb;
+      color: #BEBEBE;
       margin-bottom: 12px;
     }
 
     .sheet-search {
       padding: 10px 14px;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #D8D8D8;
       border-radius: 10px;
       font-size: 14px;
       font-family: inherit;
       outline: none;
-      color: #111;
+      color: #404040;
       margin-bottom: 8px;
       transition: border-color 0.15s;
     }
-    .sheet-search:focus { border-color: #999; box-shadow: 0 0 0 3px rgba(17,17,17,0.07); }
-    .sheet-search::placeholder { color: #ccc; }
+    .sheet-search:focus { border-color: #979797; box-shadow: 0 0 0 3px rgba(64,64,64,0.07); }
+    .sheet-search::placeholder { color: #CECECE; }
 
     .sheet-list { overflow-y: auto; flex: 1; }
     .sheet-list::-webkit-scrollbar { width: 3px; }
-    .sheet-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+    .sheet-list::-webkit-scrollbar-thumb { background: #D8D8D8; border-radius: 3px; }
 
     .sheet-item {
       padding: 10px 6px;
-      border-bottom: 1px solid #f4f4f4;
+      border-bottom: 1px solid #EBEBEB;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-size: 14px;
-      color: #111;
+      color: #404040;
       border-radius: 6px;
       transition: background 0.1s, padding-left 0.1s;
     }
-    .sheet-item:hover { background: #fafafa; padding-left: 10px; }
+    .sheet-item:hover { background: #F8F8F8; padding-left: 10px; }
     .sheet-item .si-right { display: flex; align-items: center; gap: 8px; }
-    .sheet-item .si-abbr  { font-size: 11px; color: #ccc; }
-    .sheet-item .si-off   { font-size: 11px; color: #ccc; }
+    .sheet-item .si-abbr  { font-size: 11px; color: #CECECE; }
+    .sheet-item .si-off   { font-size: 11px; color: #CECECE; }
     .sheet-empty {
       padding: 20px;
       text-align: center;
       font-size: 13px;
-      color: #bbb;
+      color: #BEBEBE;
     }
   </style>
 </head>
