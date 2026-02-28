@@ -116,7 +116,7 @@
     }
 
     /* ── Time display / edit ── */
-    .time-wrap { margin-bottom: 10px; position: relative; }
+    .time-wrap { margin-bottom: 10px; position: relative; display: flex; align-items: center; gap: 8px; }
 
     .time-display {
       font-size: 42px;
@@ -194,14 +194,20 @@
 
     /* Day-difference badge: e.g. "+1d" or "−1d" */
     .day-diff {
-      font-size: 10px;
-      font-weight: 600;
-      color: #888;
-      background: #f0f0f0;
-      border-radius: 4px;
-      padding: 1px 5px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #92580a;
+      background: #fde9b8;
+      border-radius: 6px;
+      padding: 3px 7px;
       flex-shrink: 0;
       white-space: nowrap;
+      align-self: center;
+      margin-bottom: 4px;
+    }
+    .day-diff.ahead {
+      color: #1a5fa8;
+      background: #d0e6ff;
     }
 
     .offset-text {
@@ -372,20 +378,23 @@
     .tl-work     { background: #40be79; }
 
     /* Selected column */
-    .tl-cell.tl-sel { border-color: #111; }
-    /* Top row selected: show a small notch above */
+    /* Selected cell — no border change, dot handles indicator */
+    .tl-cell.tl-sel { border-color: rgba(51,102,255,0.25); }
+
+    /* Dot centred in MY row selected cell */
     .tl-my-row .tl-cell.tl-sel::after {
       content: '';
       position: absolute;
-      top: -5px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-left: 4px solid transparent;
-      border-right: 4px solid transparent;
-      border-top: 5px solid #111;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      background: #3366ff;
+      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(51,102,255,0.4);
+      z-index: 2;
     }
 
-    /* Connector row between MY and THEIR rows */
+    /* Connector row — line only spans the gap between rows */
     .tl-conn-cell {
       height: 18px;
       background: transparent;
@@ -395,12 +404,24 @@
     .tl-conn-cell.tl-conn-sel::before {
       content: '';
       position: absolute;
-      left: 50%;
-      top: 0;
-      bottom: 0;
-      width: 1.5px;
-      background: rgba(17, 17, 17, 0.22);
+      left: 50%; top: 0; bottom: 0;
+      width: 2px;
+      background: #3366ff;
       transform: translateX(-50%);
+      z-index: 2;
+    }
+
+    /* Dot centred in THEIR row selected cell */
+    .tl-their-row .tl-cell.tl-sel::after {
+      content: '';
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      background: #3366ff;
+      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(51,102,255,0.4);
+      z-index: 2;
     }
 
     /* Date-change pip above THEIR row cells */
@@ -601,12 +622,12 @@
     <div class="time-wrap">
       <span  class="time-display" id="theirDisp"  onclick="startTimeEdit('their')">00:00</span>
       <input class="time-edit"    id="theirEdit"  type="time" />
+      <span  class="day-diff"     id="theirDiff"  style="display:none"></span>
     </div>
     <div class="card-foot">
       <div class="date-group">
         <span  class="date-text" id="theirDate"     onclick="startDateEdit('their')">—</span>
         <input class="date-edit" id="theirDateEdit" type="date" />
-        <span  class="day-diff"  id="theirDiff"     style="display:none"></span>
         <span  class="offset-text" id="theirOff">—</span>
       </div>
       <div class="date-nav">
@@ -821,10 +842,11 @@ function render() {
   const diff     = (theirDay - myDay) / 86400000;
   const badge    = document.getElementById('theirDiff');
   if (diff !== 0) {
-    badge.textContent    = diff > 0 ? `+${diff}d` : `${diff}d`;
-    badge.style.display  = 'inline-block';
+    badge.textContent = diff > 0 ? `+${diff}d` : `${diff}d`;
+    badge.style.display = 'inline-block';
+    badge.classList.toggle('ahead', diff > 0);
   } else {
-    badge.style.display  = 'none';
+    badge.style.display = 'none';
   }
 }
 
