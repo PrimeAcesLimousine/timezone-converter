@@ -24,6 +24,21 @@
       justify-content: space-between;
       margin-bottom: 24px;
     }
+    .app-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .app-logo {
+      width: 34px;
+      height: 34px;
+      background: #0a0a0a;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
     h1 {
       font-size: 20px;
       font-weight: 300;
@@ -43,7 +58,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     .card:hover         { border-color: #bbb; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
-    .card.active-card   { border-color: #111; box-shadow: 0 2px 10px rgba(0,0,0,0.1);  }
+    .card.active-card   { border-color: #B6a269; box-shadow: 0 2px 10px rgba(182,162,105,0.2);  }
 
     .card-head {
       display: flex;
@@ -62,7 +77,7 @@
       text-transform: uppercase;
       color: #bbb;
     }
-    .my-card .card-role { color: #111; }
+    .my-card .card-role { color: #B6a269; }
 
     /* Small filled dot for MY card */
     .role-dot {
@@ -72,7 +87,7 @@
       background: #bbb;
       flex-shrink: 0;
     }
-    .my-card .role-dot { background: #111; }
+    .my-card .role-dot { background: #B6a269; }
 
     .change-btn {
       background: none;
@@ -206,13 +221,29 @@
       margin-bottom: 4px;
     }
     .day-diff.ahead {
-      color: #1a5fa8;
-      background: #d0e6ff;
+      color: #5a4a1a;
+      background: #ede0c0;
     }
 
+    .offset-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .offset-label {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #bbb;
+      text-transform: uppercase;
+    }
     .offset-text {
-      font-size: 11px;
-      color: #ccc;
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
       flex-shrink: 0;
     }
 
@@ -302,7 +333,7 @@
       font-family: inherit;
       transition: all 0.15s;
     }
-    .live-btn.active { background: #111; border-color: #111; color: #fff; }
+    .live-btn.active { background: #0a0a0a; border-color: #0a0a0a; color: #fff; }
     .live-pulse {
       width: 6px;
       height: 6px;
@@ -340,16 +371,13 @@
       text-transform: uppercase;
       color: #bbb;
     }
-    .tl-head-hint {
-      font-size: 10px;
-      color: #ccc;
-    }
+    .tl-head-hint { display: none; }
 
     /* Grid: label col + 24 hour cols */
     .tl-grid {
       display: grid;
       grid-template-columns: 28px repeat(24, 1fr);
-      gap: 1px;
+      gap: 0;
     }
 
     .tl-lbl {
@@ -364,13 +392,16 @@
 
     .tl-cell {
       height: 30px;
-      border-radius: 3px;
+      border-radius: 0;
       cursor: pointer;
       position: relative;
-      border: 1px solid rgba(0,0,0,0.10);
+      border: none;
       transition: opacity 0.12s;
     }
-    .tl-cell:hover { opacity: 0.65; }
+    .tl-cell:hover { opacity: 0.7; }
+    /* Round the left end of the first cell and right end of the last cell */
+    .tl-lbl + .tl-cell           { border-radius: 4px 0 0 4px; }
+    .tl-cell:last-child          { border-radius: 0 4px 4px 0; }
 
     /* Colours — modern vibrant */
     .tl-sleep    { background: #e8e8e8; }
@@ -378,8 +409,8 @@
     .tl-work     { background: #40be79; }
 
     /* Selected column */
-    /* Selected cell — no border change, dot handles indicator */
-    .tl-cell.tl-sel { border-color: rgba(51,102,255,0.25); }
+    /* Selected cell — dot handles indicator, subtle brightness boost */
+    .tl-cell.tl-sel { filter: brightness(1.08); }
 
     /* Dot centred in MY row selected cell */
     .tl-my-row .tl-cell.tl-sel::after {
@@ -389,8 +420,8 @@
       transform: translate(-50%, -50%);
       width: 11px; height: 11px;
       border-radius: 50%;
-      background: #3366ff;
-      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(51,102,255,0.4);
+      background: #B6a269;
+      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(182,162,105,0.4);
       z-index: 2;
     }
 
@@ -406,7 +437,7 @@
       position: absolute;
       left: 50%; top: 0; bottom: 0;
       width: 2px;
-      background: #3366ff;
+      background: #B6a269;
       transform: translateX(-50%);
       z-index: 2;
     }
@@ -419,8 +450,8 @@
       transform: translate(-50%, -50%);
       width: 11px; height: 11px;
       border-radius: 50%;
-      background: #3366ff;
-      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(51,102,255,0.4);
+      background: #B6a269;
+      box-shadow: 0 0 0 2.5px #fff, 0 1px 4px rgba(182,162,105,0.4);
       z-index: 2;
     }
 
@@ -450,15 +481,16 @@
     /* Legend */
     .tl-legend {
       display: flex;
-      gap: 14px;
-      margin-top: 10px;
-      padding-left: 28px;
+      gap: 12px;
     }
     .tl-legend span {
       display: flex;
       align-items: center;
       gap: 4px;
       font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
       color: #bbb;
     }
     .tl-dot {
@@ -551,7 +583,15 @@
 <div class="app">
 
   <div class="app-header">
-    <h1>Timezone Converter</h1>
+    <div class="app-title">
+      <div class="app-logo">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="9" r="7"/>
+          <polyline points="9,5 9,9 12,11"/>
+        </svg>
+      </div>
+      <h1>Timezone Converter</h1>
+    </div>
     <button class="live-btn active" id="liveBtn" onclick="toggleLive()">
       <span class="live-pulse"></span>
       Live
@@ -577,12 +617,15 @@
     <div class="time-wrap">
       <span  class="time-display" id="myDisp"  onclick="startTimeEdit('my')">00:00</span>
       <input class="time-edit"    id="myEdit"  type="time" />
+      <div class="offset-block">
+        <span class="offset-label">Offset</span>
+        <span class="offset-text" id="myOff">—</span>
+      </div>
     </div>
     <div class="card-foot">
       <div class="date-group">
         <span  class="date-text" id="myDate"     onclick="startDateEdit('my')">—</span>
         <input class="date-edit" id="myDateEdit" type="date" />
-        <span class="offset-text" id="myOff">—</span>
       </div>
       <div class="date-nav">
         <button class="nav-btn" onclick="shiftDate(-1,'my')" title="Previous day">
@@ -623,12 +666,15 @@
       <span  class="time-display" id="theirDisp"  onclick="startTimeEdit('their')">00:00</span>
       <input class="time-edit"    id="theirEdit"  type="time" />
       <span  class="day-diff"     id="theirDiff"  style="display:none"></span>
+      <div class="offset-block">
+        <span class="offset-label">Offset</span>
+        <span class="offset-text" id="theirOff">—</span>
+      </div>
     </div>
     <div class="card-foot">
       <div class="date-group">
         <span  class="date-text" id="theirDate"     onclick="startDateEdit('their')">—</span>
         <input class="date-edit" id="theirDateEdit" type="date" />
-        <span  class="offset-text" id="theirOff">—</span>
       </div>
       <div class="date-nav">
         <button class="nav-btn" onclick="shiftDate(-1,'their')" title="Previous day">
@@ -1079,17 +1125,16 @@ function renderTimeline() {
   tl.innerHTML = `
     <div class="tl-head">
       <span class="tl-head-label">24-hour overview</span>
-      <span class="tl-head-hint">click any hour to jump</span>
+      <div class="tl-legend">
+        <span><span class="tl-dot" style="background:#e8e8e8"></span>Sleeping</span>
+        <span><span class="tl-dot" style="background:#eaaa37"></span>Off-peak</span>
+        <span><span class="tl-dot" style="background:#40be79"></span>Working</span>
+      </div>
     </div>
     <div class="tl-grid tl-my-row">${myHTML}</div>
     <div class="tl-grid">${connHTML}</div>
     <div class="tl-grid tl-their-row">${theirHTML}</div>
-    <div class="tl-grid">${axisHTML}</div>
-    <div class="tl-legend">
-      <span><span class="tl-dot" style="background:#e8e8e8"></span>Sleeping</span>
-      <span><span class="tl-dot" style="background:#fde4a4"></span>Off-peak</span>
-      <span><span class="tl-dot" style="background:#b8e8cc"></span>Working</span>
-    </div>`;
+    <div class="tl-grid">${axisHTML}</div>`;
 }
 
 function jumpToHour(hour) {
