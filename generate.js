@@ -235,4 +235,25 @@ ${sitemapUrls}
 
 fs.writeFileSync(path.join(__dirname, 'sitemap.xml'), sitemap, 'utf8');
 console.log('✓  sitemap.xml');
+
+// ── Auto-snapshot into versions/YYYY-MM-DD/ ───────────────────────────────────
+
+const snapshotDir = path.join(__dirname, 'versions', today);
+fs.mkdirSync(snapshotDir, { recursive: true });
+
+// Files to snapshot: index.html, all generated pages, sitemap, config files
+const snapshotFiles = [
+  'index.html', 'sitemap.xml', 'robots.txt',
+  'pairs.js', 'generate.js', 'package.json',
+  '_redirects', 'wrangler.toml', '.assetsignore',
+  ...generated.map(s => `${s}.html`),
+];
+
+snapshotFiles.forEach(file => {
+  const src = path.join(__dirname, file);
+  const dst = path.join(snapshotDir, file);
+  if (fs.existsSync(src)) fs.copyFileSync(src, dst);
+});
+
+console.log(`✓  versions/${today}/ (${snapshotFiles.length} files snapshotted)`);
 console.log(`\nDone! ${generated.length} pages generated → deploy to ${DOMAIN}`);
