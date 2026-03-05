@@ -130,19 +130,29 @@ function generatePage(pair) {
     `<title>${title}</title>`
   );
 
-  // 2. Meta description + canonical (inserted right after <title>)
+  // 2. Replace template description with pair-specific one; add canonical + OG tags
+  html = html.replace(
+    /  <meta name="description" content="[^"]*" \/>/,
+    `  <meta name="description" content="${desc}" />`
+  );
   html = html.replace(
     `<title>${title}</title>`,
-    `<title>${title}</title>\n  <meta name="description" content="${desc}" />\n  <link rel="canonical" href="${canonical}" />\n  <meta property="og:title" content="${title}" />\n  <meta property="og:description" content="${desc}" />\n  <meta property="og:url" content="${canonical}" />`
+    `<title>${title}</title>\n  <link rel="canonical" href="${canonical}" />\n  <meta property="og:title" content="${title}" />\n  <meta property="og:description" content="${desc}" />\n  <meta property="og:url" content="${canonical}" />`
   );
 
-  // 3. Pre-select My timezone (override browser detection)
+  // 3. Replace keywords with pair-specific value
+  html = html.replace(
+    '<meta name="keywords" content="timezone converter" />',
+    `<meta name="keywords" content="timezone converter, ${title}" />`
+  );
+
+  // 5. Pre-select My timezone (override browser detection)
   html = html.replace(
     'let myZone       = browserTz;',
     `let myZone       = '${pair.fromId}';`
   );
 
-  // 4. Pre-select Their timezone
+  // 6. Pre-select Their timezone
   html = html.replace(
     `let theirZone    = browserTz === 'America/New_York' ? 'Asia/Singapore' : 'America/New_York';`,
     `let theirZone    = '${pair.toId}';`
