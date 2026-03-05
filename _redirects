@@ -1,0 +1,6 @@
+# Cloudflare Pages — Clean URL support
+# Serves /singapore-to-london instead of /singapore-to-london.html
+# Enable "Pretty URLs" in Cloudflare Pages dashboard for automatic handling.
+
+# Redirect root hits with trailing slash
+/  /index.html  200

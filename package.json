@@ -1,0 +1,9 @@
+{
+  "name": "timezoneconverter-site",
+  "version": "1.0.0",
+  "description": "Static timezone converter site — timezoneconverter.site",
+  "scripts": {
+    "generate": "node generate.js"
+  },
+  "private": true
+}
