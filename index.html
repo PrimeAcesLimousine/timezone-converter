@@ -661,6 +661,8 @@
   .quick-links-pill.active { background: #0C0C0C; color: #fff; border-color: #0C0C0C; }
   .quick-links-section { display: none; }
   .quick-links-section.active { display: block; }
+  .biz-card-section { display: none; }
+  .biz-card-section.active { display: block; }
   .quick-links-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -682,6 +684,49 @@
   @media (max-width: 600px) {
     .quick-links-grid { grid-template-columns: repeat(2, 1fr); }
   }
+
+  /* Business card */
+  .footer-biz-card {
+    background: #F8F8F8;
+    border: 1.5px solid #D8D8D8;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    max-width: 820px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .biz-card-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .biz-card-text { display: flex; flex-direction: column; gap: 3px; }
+  .biz-card-title { font-size: 13px; font-weight: 600; color: #404040; }
+  .biz-card-desc  { font-size: 12px; color: #979797; }
+  .biz-card-link {
+    font-size: 12px;
+    font-weight: 600;
+    color: #404040;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1.5px solid #D8D8D8;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .biz-card-link:hover { background: #0C0C0C; color: #fff; border-color: #0C0C0C; }
+  .footer-text-link {
+    font-size: 11px;
+    color: #CECECE;
+    text-align: center;
+    padding-bottom: 24px;
+  }
+  .footer-text-link a { color: #BEBEBE; text-decoration: none; }
+  .footer-text-link a:hover { color: #595959; }
   </style>
   <script>
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="Ci init Vi Ji Dt Gi Ki Bi Wi capture calculateEventProperties ie register register_once register_for_session unregister unregister_for_session ne getFeatureFlag getFeatureFlagPayload getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty re Zi createPersonProfile setInternalOrTestUser se zi oe opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing Xi debug xt ee getPageViewId captureTraceFeedback captureTraceMetric ji".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
@@ -974,6 +1019,151 @@
   </div>
 </div>
 
+<!-- ── Business Cards (contextual per city) ── -->
+<div class="biz-card-section" data-base="Singapore">
+  <div class="footer-biz-card">
+    <div class="biz-card-inner">
+      <div class="biz-card-text">
+        <span class="biz-card-title">Travelling through Singapore?</span>
+        <span class="biz-card-desc">Professional airport transfers &amp; corporate chauffeur service.</span>
+      </div>
+      <a href="https://www.primeaceslimousine.com" class="biz-card-link" target="_blank" rel="noopener">
+        Prime Aces Limousine →
+      </a>
+    </div>
+  </div>
+  <p class="footer-text-link">
+    Singapore airport transfer &amp; corporate chauffeur —
+    <a href="https://www.primeaceslimousine.com" target="_blank" rel="noopener">primeaceslimousine.com</a>
+  </p>
+</div>
+
+<div class="biz-card-section" data-base="London">
+  <div class="footer-biz-card">
+    <div class="biz-card-inner">
+      <div class="biz-card-text">
+        <span class="biz-card-title">Business travel to Singapore?</span>
+        <span class="biz-card-desc">Corporate chauffeur service for executives &amp; professionals in Southeast Asia.</span>
+      </div>
+      <a href="https://www.primeaceslimousine.com/corporate-chauffeur-service" class="biz-card-link" target="_blank" rel="noopener">
+        Corporate Chauffeur Service →
+      </a>
+    </div>
+  </div>
+  <p class="footer-text-link">
+    Your corporate chauffeur partner in Southeast Asia —
+    <a href="https://www.primeaceslimousine.com/corporate-chauffeur-service" target="_blank" rel="noopener">primeaceslimousine.com</a>
+  </p>
+</div>
+
+<div class="biz-card-section" data-base="New York">
+  <div class="footer-biz-card">
+    <div class="biz-card-inner">
+      <div class="biz-card-text">
+        <span class="biz-card-title">Need a ride in Singapore?</span>
+        <span class="biz-card-desc">Premium limousine service for business travellers — airport transfers &amp; city rides.</span>
+      </div>
+      <a href="https://www.primeaceslimousine.com/limousine-service" class="biz-card-link" target="_blank" rel="noopener">
+        Limousine Service →
+      </a>
+    </div>
+  </div>
+  <p class="footer-text-link">
+    Singapore limousine service for business travellers —
+    <a href="https://www.primeaceslimousine.com/limousine-service" target="_blank" rel="noopener">primeaceslimousine.com</a>
+  </p>
+</div>
+
+<div class="biz-card-section" data-base="Tokyo">
+  <div class="footer-biz-card">
+    <div class="biz-card-inner">
+      <div class="biz-card-text">
+        <span class="biz-card-title">Arriving in Singapore?</span>
+        <span class="biz-card-desc">Reliable airport transfer service — meet &amp; greet, corporate chauffeur &amp; hourly hire.</span>
+      </div>
+      <a href="https://www.primeaceslimousine.com/airport-transfer-service" class="biz-card-link" target="_blank" rel="noopener">
+        Airport Transfer Service →
+      </a>
+    </div>
+  </div>
+  <p class="footer-text-link">
+    Singapore airport transfer service —
+    <a href="https://www.primeaceslimousine.com/airport-transfer-service" target="_blank" rel="noopener">primeaceslimousine.com</a>
+  </p>
+</div>
+
+<div class="biz-card-section" data-base="Sydney">
+  <div class="footer-biz-card">
+    <div class="biz-card-inner">
+      <div class="biz-card-text">
+        <span class="biz-card-title">Heading to Singapore?</span>
+        <span class="biz-card-desc">Your corporate chauffeur partner in Southeast Asia — airport transfers &amp; hourly service.</span>
+      </div>
+      <a href="https://www.primeaceslimousine.com" class="biz-card-link" target="_blank" rel="noopener">
+        Prime Aces Limousine →
+      </a>
+    </div>
+  </div>
+  <p class="footer-text-link">
+    Corporate chauffeur &amp; airport transfer in Singapore —
+    <a href="https://www.primeaceslimousine.com" target="_blank" rel="noopener">primeaceslimousine.com</a>
+  </p>
+</div>
+
+<div class="biz-card-section" data-base="Hong Kong">
+  <div class="footer-biz-card">
+    <div class="biz-card-inner">
+      <div class="biz-card-text">
+        <span class="biz-card-title">Singapore-bound?</span>
+        <span class="biz-card-desc">Professional limousine service &amp; airport transfers for the business traveller.</span>
+      </div>
+      <a href="https://www.primeaceslimousine.com/limousine-service" class="biz-card-link" target="_blank" rel="noopener">
+        Limousine Service →
+      </a>
+    </div>
+  </div>
+  <p class="footer-text-link">
+    Professional limousine service in Singapore —
+    <a href="https://www.primeaceslimousine.com/limousine-service" target="_blank" rel="noopener">primeaceslimousine.com</a>
+  </p>
+</div>
+
+<div class="biz-card-section" data-base="Los Angeles">
+  <div class="footer-biz-card">
+    <div class="biz-card-inner">
+      <div class="biz-card-text">
+        <span class="biz-card-title">Visiting Singapore?</span>
+        <span class="biz-card-desc">Event transportation, corporate chauffeur &amp; airport transfer service.</span>
+      </div>
+      <a href="https://www.primeaceslimousine.com/event-transportation-service" class="biz-card-link" target="_blank" rel="noopener">
+        Event Transportation →
+      </a>
+    </div>
+  </div>
+  <p class="footer-text-link">
+    Event transportation &amp; chauffeur service in Singapore —
+    <a href="https://www.primeaceslimousine.com/event-transportation-service" target="_blank" rel="noopener">primeaceslimousine.com</a>
+  </p>
+</div>
+
+<div class="biz-card-section" data-base="Dubai">
+  <div class="footer-biz-card">
+    <div class="biz-card-inner">
+      <div class="biz-card-text">
+        <span class="biz-card-title">Flying through Singapore?</span>
+        <span class="biz-card-desc">Premium airport transfer &amp; corporate chauffeur — your partner in Southeast Asia.</span>
+      </div>
+      <a href="https://www.primeaceslimousine.com/airport-transfer-service" class="biz-card-link" target="_blank" rel="noopener">
+        Airport Transfer Service →
+      </a>
+    </div>
+  </div>
+  <p class="footer-text-link">
+    Premium airport transfer in Singapore —
+    <a href="https://www.primeaceslimousine.com/airport-transfer-service" target="_blank" rel="noopener">primeaceslimousine.com</a>
+  </p>
+</div>
+
 <!-- ── ZONE PICKER SHEET ── -->
 <div class="sheet-overlay" id="sheetOverlay" onclick="handleOverlayClick(event)">
   <div class="sheet" id="sheet">
@@ -1095,10 +1285,13 @@ const TZ_TO_CITY = {
 function showCity(city) {
   document.querySelectorAll('.quick-links-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.quick-links-pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.biz-card-section').forEach(s => s.classList.remove('active'));
   const section = document.querySelector(`.quick-links-section[data-base="${city}"]`);
   const pill = document.querySelector(`.quick-links-pill[data-city="${city}"]`);
+  const bizCard = document.querySelector(`.biz-card-section[data-base="${city}"]`);
   if (section) section.classList.add('active');
   if (pill) pill.classList.add('active');
+  if (bizCard) bizCard.classList.add('active');
 }
 
 // Auto-detect city from browser timezone
