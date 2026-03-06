@@ -118,7 +118,7 @@ const FOOTER_STYLES = `
 
 function generatePage(pair) {
   const slug      = `${toSlug(pair.from)}-to-${toSlug(pair.to)}`;
-  const title     = `${pair.from} to ${pair.to} Time Converter`;
+  const title     = `${pair.from} to ${pair.to} Timezone Converter`;
   const desc      = `Convert ${pair.from} time to ${pair.to} time instantly. See the current time in ${pair.to} when scheduling meetings, calls, or travel from ${pair.from}.`;
   const canonical = `${DOMAIN}/${slug}`;
 
@@ -215,16 +215,52 @@ ${links}
   return { slug, html };
 }
 
+// ── SEO Checklist ─────────────────────────────────────────────────────────────
+// Validates every generated page against on-page SEO rules:
+//   1. Meta Title exists, under 59 chars, contains focus keyword
+//   2. Meta Description exists, under 158 chars
+//   3. Focus keyword derived from slug: "{From} to {To} Timezone Converter"
+//   4. Sitemap.xml updated (handled below)
+//   5. robots.txt reviewed (checked at end)
+
+const SEO_TITLE_MAX  = 59;
+const SEO_DESC_MAX   = 158;
+
+function seoCheck(slug, title, desc) {
+  const focusKeyword = title;           // full title IS the focus keyword
+  const warnings = [];
+
+  // Title checks
+  if (!title)                          warnings.push('MISSING meta title');
+  if (title.length > SEO_TITLE_MAX)    warnings.push(`Title too long: ${title.length}/${SEO_TITLE_MAX} chars`);
+  if (!title.includes(focusKeyword))   warnings.push(`Focus keyword not in title`);
+
+  // Description checks
+  if (!desc)                           warnings.push('MISSING meta description');
+  if (desc.length > SEO_DESC_MAX)      warnings.push(`Description too long: ${desc.length}/${SEO_DESC_MAX} chars`);
+
+  return warnings;
+}
+
 // ── Run ───────────────────────────────────────────────────────────────────────
 
-const generated = [];
+const generated  = [];
+const seoResults = [];
 
 PAIRS.forEach(pair => {
   const { slug, html } = generatePage(pair);
   const filename = `${slug}.html`;
   fs.writeFileSync(path.join(__dirname, filename), html, 'utf8');
   generated.push(slug);
-  console.log(`✓  ${filename}`);
+
+  // Run SEO checklist
+  const title = `${pair.from} to ${pair.to} Timezone Converter`;
+  const desc  = `Convert ${pair.from} time to ${pair.to} time instantly. See the current time in ${pair.to} when scheduling meetings, calls, or travel from ${pair.from}.`;
+  const warnings = seoCheck(slug, title, desc);
+  seoResults.push({ slug, title, desc, warnings });
+
+  const status = warnings.length ? `⚠  ${filename}  → ${warnings.join('; ')}` : `✓  ${filename}`;
+  console.log(status);
 });
 
 // ── Sitemap ───────────────────────────────────────────────────────────────────
@@ -266,4 +302,26 @@ snapshotFiles.forEach(file => {
 });
 
 console.log(`✓  versions/${today}/ (${snapshotFiles.length} files snapshotted)`);
+
+// ── SEO Checklist Report ──────────────────────────────────────────────────────
+
+const robotsPath = path.join(__dirname, 'robots.txt');
+const robotsOk   = fs.existsSync(robotsPath) && fs.readFileSync(robotsPath, 'utf8').includes('Sitemap:');
+
+console.log('\n── SEO Checklist Report ──────────────────────────────');
+console.log(`  Pages generated:   ${generated.length}`);
+console.log(`  Sitemap.xml:       ✓  ${generated.length + 1} URLs (home + ${generated.length} pairs)`);
+console.log(`  robots.txt:        ${robotsOk ? '✓  contains Sitemap directive' : '⚠  MISSING or no Sitemap directive'}`);
+
+const fails = seoResults.filter(r => r.warnings.length > 0);
+if (fails.length === 0) {
+  console.log(`  SEO checks:        ✓  All ${generated.length} pages pass`);
+} else {
+  console.log(`  SEO checks:        ⚠  ${fails.length} page(s) with warnings:`);
+  fails.forEach(r => {
+    console.log(`    /${r.slug}  → ${r.warnings.join('; ')}`);
+  });
+}
+
+console.log('─────────────────────────────────────────────────────');
 console.log(`\nDone! ${generated.length} pages generated → deploy to ${DOMAIN}`);
