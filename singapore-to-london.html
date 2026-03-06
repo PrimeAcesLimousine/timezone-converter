@@ -587,6 +587,50 @@
       color: #BEBEBE;
     }
 
+  /* ── Add timezone button ── */
+  .add-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    flex-shrink: 0;
+  }
+  .add-btn {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1.5px dashed #BEBEBE;
+    background: transparent;
+    color: #BEBEBE;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .add-btn:hover { border-color: #404040; color: #404040; }
+
+  /* ── Extra timezone card ── */
+  .extra-card-col { flex: 1; min-width: 0; margin-left: 10px; }
+  .extra-remove-btn {
+    background: none;
+    border: none;
+    color: #BEBEBE;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+  .extra-remove-btn:hover { color: #404040; }
+  .extra-date { font-size: 13px; color: #595959; margin-top: 10px; }
+
+  @media (max-width: 600px) {
+    .add-col { flex-direction: row; padding: 8px 0; }
+    .extra-card-col { margin-left: 0; margin-top: 8px; }
+  }
+
   /* ── Site Footer ── */
   .site-footer {
     margin-top: 48px;
@@ -799,6 +843,10 @@
     </div>
   </div>
 
+  <div class="add-col" id="addCol">
+    <button class="add-btn" onclick="addExtraZone()" title="Add timezone">+</button>
+  </div>
+
   </div><!-- /.cards-row -->
 
   <!-- ── LIVE (legacy slot, hidden) ── -->
@@ -914,8 +962,10 @@ let theirZone = 'Europe/London';
 let currentDate  = new Date();
 let isLive       = true;
 let ticker       = null;
-let pickerFor    = null;  // 'my' | 'their'
+let pickerFor    = null;  // 'my' | 'their' | 'extra'
 let activeCard   = 'my';  // 'my' | 'their'
+let extraZones   = [];    // IANA timezone IDs added via "+" button
+const MAX_EXTRA  = 1;     // max 1 extra zone (3 cards total)
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const pad = n => String(n).padStart(2, '0');
@@ -980,6 +1030,51 @@ function setActive(which) {
   document.getElementById('theirCard').classList.toggle('active-card', which === 'their');
 }
 
+// ── Extra Zones ───────────────────────────────────────────────────────────────
+function addExtraZone() {
+  openSheet('extra');
+}
+
+function removeExtraZone(i) {
+  extraZones.splice(i, 1);
+  render();
+}
+
+function renderExtraCards() {
+  const row    = document.querySelector('.cards-row');
+  const addCol = document.getElementById('addCol');
+
+  // Remove previously rendered extra cards
+  row.querySelectorAll('.extra-card-col').forEach(el => el.remove());
+
+  const now = currentDate;
+  extraZones.forEach((tzId, i) => {
+    const p   = getLocalParts(now, tzId);
+    const col = document.createElement('div');
+    col.className = 'extra-card-col';
+    col.innerHTML = `
+      <div class="card" style="height:100%;box-sizing:border-box;display:flex;flex-direction:column;">
+        <div class="card-head">
+          <div class="card-role"><span class="role-dot"></span> Also</div>
+          <button class="extra-remove-btn" onclick="removeExtraZone(${i})">✕</button>
+        </div>
+        <div class="zone-name">${tzDisplayName(tzId, now)}</div>
+        <div class="time-wrap">
+          <span class="time-display">${pad(p.hour)}:${pad(p.minute)}</span>
+          <div class="offset-block">
+            <span class="offset-label">OFFSET</span>
+            <span class="offset-text">${getOffsetStr(tzId, now)}</span>
+          </div>
+        </div>
+        <div class="extra-date">${fmtDate(now, tzId)}</div>
+      </div>`;
+    row.insertBefore(col, addCol);
+  });
+
+  // Hide "+" once max reached
+  addCol.style.display = extraZones.length >= MAX_EXTRA ? 'none' : 'flex';
+}
+
 // ── Render ────────────────────────────────────────────────────────────────────
 function render() {
   const now = currentDate;
@@ -1013,6 +1108,9 @@ function render() {
   } else {
     badge.style.display = 'none';
   }
+
+  // Extra cards
+  renderExtraCards();
 }
 
 // ── Time editing ──────────────────────────────────────────────────────────────
@@ -1121,9 +1219,11 @@ function toggleLive() {
 
 // ── Zone picker ───────────────────────────────────────────────────────────────
 function openSheet(which) {
-  pickerFor = which; setActive(which);
+  pickerFor = which;
+  if (which === 'my' || which === 'their') setActive(which);
   document.getElementById('sheetTitle').textContent =
-    which === 'my' ? 'My Timezone' : 'Their Timezone';
+    which === 'my' ? 'My Timezone' :
+    which === 'extra' ? 'Add Timezone' : 'Their Timezone';
   document.getElementById('sheetSearch').value = '';
   renderSheetList('');
   document.getElementById('sheetOverlay').classList.add('open');
@@ -1169,8 +1269,9 @@ function renderSheetList(query) {
 }
 
 function selectZone(tzId) {
-  if (pickerFor === 'my') myZone = tzId;
-  else theirZone = tzId;
+  if (pickerFor === 'my')         myZone = tzId;
+  else if (pickerFor === 'their') theirZone = tzId;
+  else if (pickerFor === 'extra') extraZones.push(tzId);
   closeSheet();
   render();
 }
@@ -1241,6 +1342,32 @@ function renderTimeline() {
     axisHTML += `<div class="tl-axis-cell">${h % 6 === 0 ? pad(h) : ''}</div>`;
   }
 
+  // Extra timezone rows
+  let extraRowsHTML = '';
+  extraZones.forEach(tzId => {
+    const abbr = TZ_LIST.find(z => z.id === tzId)?.abbr || tzId.split('/').pop().slice(0, 4);
+    let rowHTML = `<div class="tl-lbl">${abbr}</div>`;
+    let prevDate = null;
+    for (let h = 0; h < 24; h++) {
+      const colUTC  = new Date(dayStart.getTime() + h * 3600_000);
+      const tp      = getLocalParts(colUTC, tzId);
+      const sel     = h === selHour;
+      const dateKey = `${tp.year}-${tp.month}-${tp.day}`;
+      let pip = '';
+      if (prevDate !== null && dateKey !== prevDate) {
+        const label = new Intl.DateTimeFormat('en-US', {
+          timeZone: tzId, month: 'short', day: 'numeric'
+        }).format(colUTC);
+        pip = `<span class="tl-pip">${label}</span>`;
+      }
+      prevDate = dateKey;
+      rowHTML += `<div class="tl-cell ${slotClass(tp.hour)}${sel ? ' tl-sel' : ''}"
+                       onclick="jumpToHour(${h})" title="${pad(tp.hour)}:00 ${abbr}"
+                       style="position:relative">${pip}</div>`;
+    }
+    extraRowsHTML += `<div class="tl-grid">${rowHTML}</div>`;
+  });
+
   tl.innerHTML = `
     <div class="tl-head">
       <span class="tl-head-label">24-hour overview</span>
@@ -1253,6 +1380,7 @@ function renderTimeline() {
     <div class="tl-grid tl-my-row">${myHTML}</div>
     <div class="tl-grid">${connHTML}</div>
     <div class="tl-grid tl-their-row">${theirHTML}</div>
+    ${extraRowsHTML}
     <div class="tl-grid">${axisHTML}</div>`;
 }
 
