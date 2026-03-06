@@ -950,13 +950,6 @@ const TZ_LIST = [
 const browserTz  = Intl.DateTimeFormat().resolvedOptions().timeZone;
 let myZone    = 'Asia/Singapore';
 let theirZone = 'Asia/Riyadh';
-(function() {
-  var _from = 'Asia/Singapore', _to = 'Asia/Riyadh';
-  var inList = TZ_LIST.find(function(t) { return t.id === browserTz; });
-  if (!inList) return;
-  if (browserTz === _to)        { myZone = _to;      theirZone = _from; }
-  else if (browserTz !== _from) { myZone = browserTz; theirZone = _from; }
-})();
 let currentDate  = new Date();
 let isLive       = true;
 let ticker       = null;

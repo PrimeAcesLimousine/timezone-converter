@@ -152,17 +152,10 @@ function generatePage(pair) {
     `let myZone    = '${pair.fromId}';`
   );
 
-  // 6. Set default Their timezone, then run browser TZ detection with auto-swap
+  // 6. Set default Their timezone (no browser detection on pair pages — show exactly what user chose)
   html = html.replace(
     `let theirZone    = browserTz === 'America/New_York' ? 'Asia/Singapore' : 'America/New_York';`,
-    `let theirZone = '${pair.toId}';
-(function() {
-  var _from = '${pair.fromId}', _to = '${pair.toId}';
-  var inList = TZ_LIST.find(function(t) { return t.id === browserTz; });
-  if (!inList) return;
-  if (browserTz === _to)        { myZone = _to;      theirZone = _from; }
-  else if (browserTz !== _from) { myZone = browserTz; theirZone = _from; }
-})();`
+    `let theirZone = '${pair.toId}';`
   );
 
   // 5. Inject footer styles before </style>
