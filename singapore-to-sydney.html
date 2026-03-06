@@ -613,7 +613,6 @@
   .add-btn:hover { border-color: #404040; color: #404040; }
 
   /* ── Extra timezone card ── */
-  .extra-sep { width: 20px; flex-shrink: 0; }
   .extra-remove-btn {
     background: none;
     border: none;
@@ -628,7 +627,6 @@
 
   @media (max-width: 600px) {
     .add-col { flex-direction: row; padding: 8px 0; }
-    .extra-sep { width: 0; height: 8px; }
   }
 
   /* ── Site Footer ── */
@@ -1040,21 +1038,35 @@ function removeExtraZone(i) {
   render();
 }
 
+function swapTheirExtra(i) {
+  const tmp = theirZone;
+  theirZone = extraZones[i];
+  extraZones[i] = tmp;
+  render();
+}
+
 function renderExtraCards() {
   const row    = document.querySelector('.cards-row');
   const addCol = document.getElementById('addCol');
 
   // Remove previously rendered extra items
-  row.querySelectorAll('.extra-sep, .extra-card').forEach(el => el.remove());
+  row.querySelectorAll('.extra-swap-col, .extra-card').forEach(el => el.remove());
 
   const now = currentDate;
   extraZones.forEach((tzId, i) => {
     const p = getLocalParts(now, tzId);
 
-    // Thin separator (mirrors swap-col visual gap)
-    const sep = document.createElement('div');
-    sep.className = 'extra-sep';
-    row.insertBefore(sep, addCol);
+    // Swap button between Their Time and ALSO (same style as existing swap-col)
+    const swapCol = document.createElement('div');
+    swapCol.className = 'swap-col extra-swap-col';
+    swapCol.innerHTML = `
+      <button class="swap-btn" onclick="swapTheirExtra(${i})" title="Swap zones">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2.5 5h10M9.5 2.5L12 5L9.5 7.5"/>
+          <path d="M12.5 10H2.5M5.5 7.5L3 10L5.5 12.5"/>
+        </svg>
+      </button>`;
+    row.insertBefore(swapCol, addCol);
 
     // Card injected as direct flex child — picks up .cards-row .card { flex:1 }
     const card = document.createElement('div');
