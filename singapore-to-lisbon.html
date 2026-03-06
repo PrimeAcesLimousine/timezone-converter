@@ -613,7 +613,7 @@
   .add-btn:hover { border-color: #404040; color: #404040; }
 
   /* ── Extra timezone card ── */
-  .extra-card-col { flex: 1; min-width: 0; margin-left: 10px; }
+  .extra-sep { width: 20px; flex-shrink: 0; }
   .extra-remove-btn {
     background: none;
     border: none;
@@ -628,7 +628,7 @@
 
   @media (max-width: 600px) {
     .add-col { flex-direction: row; padding: 8px 0; }
-    .extra-card-col { margin-left: 0; margin-top: 8px; }
+    .extra-sep { width: 0; height: 8px; }
   }
 
   /* ── Site Footer ── */
@@ -1044,31 +1044,36 @@ function renderExtraCards() {
   const row    = document.querySelector('.cards-row');
   const addCol = document.getElementById('addCol');
 
-  // Remove previously rendered extra cards
-  row.querySelectorAll('.extra-card-col').forEach(el => el.remove());
+  // Remove previously rendered extra items
+  row.querySelectorAll('.extra-sep, .extra-card').forEach(el => el.remove());
 
   const now = currentDate;
   extraZones.forEach((tzId, i) => {
-    const p   = getLocalParts(now, tzId);
-    const col = document.createElement('div');
-    col.className = 'extra-card-col';
-    col.innerHTML = `
-      <div class="card" style="height:100%;box-sizing:border-box;display:flex;flex-direction:column;">
-        <div class="card-head">
-          <div class="card-role"><span class="role-dot"></span> Also</div>
-          <button class="extra-remove-btn" onclick="removeExtraZone(${i})">✕</button>
+    const p = getLocalParts(now, tzId);
+
+    // Thin separator (mirrors swap-col visual gap)
+    const sep = document.createElement('div');
+    sep.className = 'extra-sep';
+    row.insertBefore(sep, addCol);
+
+    // Card injected as direct flex child — picks up .cards-row .card { flex:1 }
+    const card = document.createElement('div');
+    card.className = 'card extra-card';
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="card-role"><span class="role-dot"></span> Also</div>
+        <button class="extra-remove-btn" onclick="removeExtraZone(${i})">✕</button>
+      </div>
+      <div class="zone-name">${tzDisplayName(tzId, now)}</div>
+      <div class="time-wrap">
+        <span class="time-display">${pad(p.hour)}:${pad(p.minute)}</span>
+        <div class="offset-block">
+          <span class="offset-label">OFFSET</span>
+          <span class="offset-text">${getOffsetStr(tzId, now)}</span>
         </div>
-        <div class="zone-name">${tzDisplayName(tzId, now)}</div>
-        <div class="time-wrap">
-          <span class="time-display">${pad(p.hour)}:${pad(p.minute)}</span>
-          <div class="offset-block">
-            <span class="offset-label">OFFSET</span>
-            <span class="offset-text">${getOffsetStr(tzId, now)}</span>
-          </div>
-        </div>
-        <div class="extra-date">${fmtDate(now, tzId)}</div>
-      </div>`;
-    row.insertBefore(col, addCol);
+      </div>
+      <div class="extra-date">${fmtDate(now, tzId)}</div>`;
+    row.insertBefore(card, addCol);
   });
 
   // Hide "+" once max reached
