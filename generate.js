@@ -158,6 +158,10 @@ function generatePage(pair) {
     `let theirZone = '${pair.toId}';`
   );
 
+  // Strip Clicky tracking (home page only)
+  html = html.replace(/<!-- Clicky Tracking Code -->[\s\S]*?<!-- end of clicky code -->\n?/g, '');
+  html = html.replace(/<!-- Clicky Tracking Code -->\n<script async data-id="101502427"[^<]*<\/script>\n<noscript>[\s\S]*?<\/noscript>\n?/g, '');
+
   // 5. Inject footer styles before </style>
   html = html.replace('  </style>', `${FOOTER_STYLES}\n  </style>`);
 
