@@ -638,6 +638,29 @@
     margin-bottom: 10px;
     display: block;
   }
+  .quick-links-pills {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .quick-links-pill {
+    font-size: 12px;
+    font-weight: 600;
+    color: #979797;
+    background: none;
+    border: 1.5px solid #EBEBEB;
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+    white-space: nowrap;
+    font-family: 'Barlow', sans-serif;
+  }
+  .quick-links-pill:hover { color: #404040; border-color: #D8D8D8; }
+  .quick-links-pill.active { background: #0C0C0C; color: #fff; border-color: #0C0C0C; }
+  .quick-links-section { display: none; }
+  .quick-links-section.active { display: block; }
   .quick-links-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -793,22 +816,161 @@
 <!-- ── QUICK LINKS ── -->
 <div class="quick-links">
   <span class="quick-links-label">Popular Time Zone Converters</span>
-  <div class="quick-links-grid">
-    <a href="/singapore-to-london.html">Singapore → London</a>
-    <a href="/singapore-to-new-york.html">Singapore → New York</a>
-    <a href="/singapore-to-tokyo.html">Singapore → Tokyo</a>
-    <a href="/singapore-to-sydney.html">Singapore → Sydney</a>
-    <a href="/singapore-to-hong-kong.html">Singapore → Hong Kong</a>
-    <a href="/singapore-to-dubai.html">Singapore → Dubai</a>
-    <a href="/singapore-to-los-angeles.html">Singapore → Los Angeles</a>
-    <a href="/singapore-to-paris.html">Singapore → Paris</a>
-    <a href="/singapore-to-mumbai.html">Singapore → Mumbai</a>
-    <a href="/singapore-to-frankfurt.html">Singapore → Frankfurt</a>
-    <a href="/singapore-to-seoul.html">Singapore → Seoul</a>
-    <a href="/singapore-to-toronto.html">Singapore → Toronto</a>
-    <a href="/singapore-to-kuala-lumpur.html">Singapore → Kuala Lumpur</a>
-    <a href="/singapore-to-bangkok.html">Singapore → Bangkok</a>
-    <a href="/singapore-to-zurich.html">Singapore → Zurich</a>
+
+  <!-- City pills -->
+  <div class="quick-links-pills" id="qlPills">
+    <button class="quick-links-pill" data-city="Singapore" onclick="showCity('Singapore')">Singapore</button>
+    <button class="quick-links-pill" data-city="London" onclick="showCity('London')">London</button>
+    <button class="quick-links-pill" data-city="New York" onclick="showCity('New York')">New York</button>
+    <button class="quick-links-pill" data-city="Tokyo" onclick="showCity('Tokyo')">Tokyo</button>
+    <button class="quick-links-pill" data-city="Sydney" onclick="showCity('Sydney')">Sydney</button>
+    <button class="quick-links-pill" data-city="Hong Kong" onclick="showCity('Hong Kong')">Hong Kong</button>
+    <button class="quick-links-pill" data-city="Los Angeles" onclick="showCity('Los Angeles')">Los Angeles</button>
+    <button class="quick-links-pill" data-city="Dubai" onclick="showCity('Dubai')">Dubai</button>
+  </div>
+
+  <!-- Singapore -->
+  <div class="quick-links-section" data-base="Singapore">
+    <div class="quick-links-grid">
+      <a href="/singapore-to-london.html">Singapore → London</a>
+      <a href="/singapore-to-new-york.html">Singapore → New York</a>
+      <a href="/singapore-to-tokyo.html">Singapore → Tokyo</a>
+      <a href="/singapore-to-sydney.html">Singapore → Sydney</a>
+      <a href="/singapore-to-hong-kong.html">Singapore → Hong Kong</a>
+      <a href="/singapore-to-dubai.html">Singapore → Dubai</a>
+      <a href="/singapore-to-los-angeles.html">Singapore → Los Angeles</a>
+      <a href="/singapore-to-mumbai.html">Singapore → Mumbai</a>
+      <a href="/singapore-to-seoul.html">Singapore → Seoul</a>
+      <a href="/singapore-to-kuala-lumpur.html">Singapore → Kuala Lumpur</a>
+      <a href="/singapore-to-paris.html">Singapore → Paris</a>
+      <a href="/singapore-to-frankfurt.html">Singapore → Frankfurt</a>
+    </div>
+  </div>
+
+  <!-- London -->
+  <div class="quick-links-section" data-base="London">
+    <div class="quick-links-grid">
+      <a href="/london-to-new-york.html">London → New York</a>
+      <a href="/london-to-tokyo.html">London → Tokyo</a>
+      <a href="/london-to-hong-kong.html">London → Hong Kong</a>
+      <a href="/london-to-singapore.html">London → Singapore</a>
+      <a href="/london-to-sydney.html">London → Sydney</a>
+      <a href="/london-to-frankfurt.html">London → Frankfurt</a>
+      <a href="/london-to-dubai.html">London → Dubai</a>
+      <a href="/london-to-shanghai.html">London → Shanghai</a>
+      <a href="/london-to-mumbai.html">London → Mumbai</a>
+      <a href="/london-to-toronto.html">London → Toronto</a>
+      <a href="/london-to-zurich.html">London → Zurich</a>
+      <a href="/london-to-los-angeles.html">London → Los Angeles</a>
+    </div>
+  </div>
+
+  <!-- New York -->
+  <div class="quick-links-section" data-base="New York">
+    <div class="quick-links-grid">
+      <a href="/new-york-to-london.html">New York → London</a>
+      <a href="/new-york-to-tokyo.html">New York → Tokyo</a>
+      <a href="/new-york-to-hong-kong.html">New York → Hong Kong</a>
+      <a href="/new-york-to-singapore.html">New York → Singapore</a>
+      <a href="/new-york-to-sydney.html">New York → Sydney</a>
+      <a href="/new-york-to-frankfurt.html">New York → Frankfurt</a>
+      <a href="/new-york-to-dubai.html">New York → Dubai</a>
+      <a href="/new-york-to-shanghai.html">New York → Shanghai</a>
+      <a href="/new-york-to-mumbai.html">New York → Mumbai</a>
+      <a href="/new-york-to-toronto.html">New York → Toronto</a>
+      <a href="/new-york-to-los-angeles.html">New York → Los Angeles</a>
+      <a href="/new-york-to-chicago.html">New York → Chicago</a>
+    </div>
+  </div>
+
+  <!-- Tokyo -->
+  <div class="quick-links-section" data-base="Tokyo">
+    <div class="quick-links-grid">
+      <a href="/tokyo-to-new-york.html">Tokyo → New York</a>
+      <a href="/tokyo-to-london.html">Tokyo → London</a>
+      <a href="/tokyo-to-hong-kong.html">Tokyo → Hong Kong</a>
+      <a href="/tokyo-to-singapore.html">Tokyo → Singapore</a>
+      <a href="/tokyo-to-sydney.html">Tokyo → Sydney</a>
+      <a href="/tokyo-to-shanghai.html">Tokyo → Shanghai</a>
+      <a href="/tokyo-to-seoul.html">Tokyo → Seoul</a>
+      <a href="/tokyo-to-mumbai.html">Tokyo → Mumbai</a>
+      <a href="/tokyo-to-frankfurt.html">Tokyo → Frankfurt</a>
+      <a href="/tokyo-to-dubai.html">Tokyo → Dubai</a>
+      <a href="/tokyo-to-los-angeles.html">Tokyo → Los Angeles</a>
+      <a href="/tokyo-to-toronto.html">Tokyo → Toronto</a>
+    </div>
+  </div>
+
+  <!-- Sydney -->
+  <div class="quick-links-section" data-base="Sydney">
+    <div class="quick-links-grid">
+      <a href="/sydney-to-new-york.html">Sydney → New York</a>
+      <a href="/sydney-to-london.html">Sydney → London</a>
+      <a href="/sydney-to-tokyo.html">Sydney → Tokyo</a>
+      <a href="/sydney-to-hong-kong.html">Sydney → Hong Kong</a>
+      <a href="/sydney-to-singapore.html">Sydney → Singapore</a>
+      <a href="/sydney-to-shanghai.html">Sydney → Shanghai</a>
+      <a href="/sydney-to-seoul.html">Sydney → Seoul</a>
+      <a href="/sydney-to-mumbai.html">Sydney → Mumbai</a>
+      <a href="/sydney-to-auckland.html">Sydney → Auckland</a>
+      <a href="/sydney-to-dubai.html">Sydney → Dubai</a>
+      <a href="/sydney-to-frankfurt.html">Sydney → Frankfurt</a>
+      <a href="/sydney-to-los-angeles.html">Sydney → Los Angeles</a>
+    </div>
+  </div>
+
+  <!-- Hong Kong -->
+  <div class="quick-links-section" data-base="Hong Kong">
+    <div class="quick-links-grid">
+      <a href="/hong-kong-to-new-york.html">Hong Kong → New York</a>
+      <a href="/hong-kong-to-london.html">Hong Kong → London</a>
+      <a href="/hong-kong-to-tokyo.html">Hong Kong → Tokyo</a>
+      <a href="/hong-kong-to-singapore.html">Hong Kong → Singapore</a>
+      <a href="/hong-kong-to-shanghai.html">Hong Kong → Shanghai</a>
+      <a href="/hong-kong-to-sydney.html">Hong Kong → Sydney</a>
+      <a href="/hong-kong-to-mumbai.html">Hong Kong → Mumbai</a>
+      <a href="/hong-kong-to-seoul.html">Hong Kong → Seoul</a>
+      <a href="/hong-kong-to-dubai.html">Hong Kong → Dubai</a>
+      <a href="/hong-kong-to-frankfurt.html">Hong Kong → Frankfurt</a>
+      <a href="/hong-kong-to-taipei.html">Hong Kong → Taipei</a>
+      <a href="/hong-kong-to-los-angeles.html">Hong Kong → Los Angeles</a>
+    </div>
+  </div>
+
+  <!-- Los Angeles -->
+  <div class="quick-links-section" data-base="Los Angeles">
+    <div class="quick-links-grid">
+      <a href="/los-angeles-to-new-york.html">Los Angeles → New York</a>
+      <a href="/los-angeles-to-london.html">Los Angeles → London</a>
+      <a href="/los-angeles-to-tokyo.html">Los Angeles → Tokyo</a>
+      <a href="/los-angeles-to-hong-kong.html">Los Angeles → Hong Kong</a>
+      <a href="/los-angeles-to-singapore.html">Los Angeles → Singapore</a>
+      <a href="/los-angeles-to-sydney.html">Los Angeles → Sydney</a>
+      <a href="/los-angeles-to-shanghai.html">Los Angeles → Shanghai</a>
+      <a href="/los-angeles-to-seoul.html">Los Angeles → Seoul</a>
+      <a href="/los-angeles-to-mumbai.html">Los Angeles → Mumbai</a>
+      <a href="/los-angeles-to-dubai.html">Los Angeles → Dubai</a>
+      <a href="/los-angeles-to-frankfurt.html">Los Angeles → Frankfurt</a>
+      <a href="/los-angeles-to-toronto.html">Los Angeles → Toronto</a>
+    </div>
+  </div>
+
+  <!-- Dubai -->
+  <div class="quick-links-section" data-base="Dubai">
+    <div class="quick-links-grid">
+      <a href="/dubai-to-london.html">Dubai → London</a>
+      <a href="/dubai-to-new-york.html">Dubai → New York</a>
+      <a href="/dubai-to-singapore.html">Dubai → Singapore</a>
+      <a href="/dubai-to-hong-kong.html">Dubai → Hong Kong</a>
+      <a href="/dubai-to-mumbai.html">Dubai → Mumbai</a>
+      <a href="/dubai-to-tokyo.html">Dubai → Tokyo</a>
+      <a href="/dubai-to-sydney.html">Dubai → Sydney</a>
+      <a href="/dubai-to-frankfurt.html">Dubai → Frankfurt</a>
+      <a href="/dubai-to-shanghai.html">Dubai → Shanghai</a>
+      <a href="/dubai-to-riyadh.html">Dubai → Riyadh</a>
+      <a href="/dubai-to-toronto.html">Dubai → Toronto</a>
+      <a href="/dubai-to-sao-paulo.html">Dubai → Sao Paulo</a>
+    </div>
   </div>
 </div>
 
@@ -839,7 +1001,7 @@ const TZ_LIST = [
   { id:'America/Mexico_City',           label:'Mexico City',        abbr:''     },
   { id:'America/Bogota',                label:'Bogotá',             abbr:''     },
   { id:'America/Lima',                  label:'Lima',               abbr:''     },
-  { id:'America/Sao_Paulo',             label:'São Paulo',          abbr:''     },
+  { id:'America/Sao_Paulo',             label:'Sao Paulo',          abbr:''     },
   { id:'America/Argentina/Buenos_Aires',label:'Buenos Aires',       abbr:''     },
   { id:'America/Santiago',              label:'Santiago',           abbr:''     },
   { id:'Europe/London',                 label:'London',             abbr:'GMT'  },
@@ -903,6 +1065,48 @@ const TZ_LIST = [
   { id:'Pacific/Fiji',                  label:'Fiji',               abbr:'FJT'  },
   { id:'UTC',                           label:'UTC',                abbr:'UTC'  },
 ];
+
+// ── Quick Links: city pill switching + TZ auto-detection ─────────────────────
+const TZ_TO_CITY = {
+  'Asia/Singapore':      'Singapore',
+  'Asia/Kuala_Lumpur':   'Singapore',
+  'Asia/Jakarta':        'Singapore',
+  'Asia/Bangkok':        'Singapore',
+  'Asia/Manila':         'Singapore',
+  'Europe/London':       'London',
+  'Europe/Dublin':       'London',
+  'Europe/Lisbon':       'London',
+  'America/New_York':    'New York',
+  'America/Detroit':     'New York',
+  'America/Indiana/Indianapolis': 'New York',
+  'Asia/Tokyo':          'Tokyo',
+  'Australia/Sydney':    'Sydney',
+  'Australia/Melbourne': 'Sydney',
+  'Australia/Brisbane':  'Sydney',
+  'Asia/Hong_Kong':      'Hong Kong',
+  'Asia/Macau':          'Hong Kong',
+  'America/Los_Angeles': 'Los Angeles',
+  'America/Vancouver':   'Los Angeles',
+  'America/Tijuana':     'Los Angeles',
+  'Asia/Dubai':          'Dubai',
+  'Asia/Muscat':         'Dubai',
+};
+
+function showCity(city) {
+  document.querySelectorAll('.quick-links-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.quick-links-pill').forEach(p => p.classList.remove('active'));
+  const section = document.querySelector(`.quick-links-section[data-base="${city}"]`);
+  const pill = document.querySelector(`.quick-links-pill[data-city="${city}"]`);
+  if (section) section.classList.add('active');
+  if (pill) pill.classList.add('active');
+}
+
+// Auto-detect city from browser timezone
+(function() {
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const city = TZ_TO_CITY[tz] || 'Singapore';
+  showCity(city);
+})();
 
 // ── State ─────────────────────────────────────────────────────────────────────
 const browserTz  = Intl.DateTimeFormat().resolvedOptions().timeZone;

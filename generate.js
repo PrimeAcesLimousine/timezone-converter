@@ -6,7 +6,7 @@
 const fs   = require('fs');
 const path = require('path');
 
-const PAIRS    = require('./pairs');
+const { PAIRS, BASE_CITIES } = require('./pairs');
 const DOMAIN   = 'https://www.timezoneconverter.site';
 const TEMPLATE = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 
@@ -165,14 +165,12 @@ function generatePage(pair) {
   // 5. Inject footer styles before </style>
   html = html.replace('  </style>', `${FOOTER_STYLES}\n  </style>`);
 
-  // 6. Build quick links grouped by region
-  const otherPairs = PAIRS.filter(p => p !== pair);
-
-  // Get unique region order (preserving order from pairs.js)
-  const regions = [...new Set(PAIRS.map(p => p.region))];
+  // 6. Build quick links — scoped to same base city, grouped by region
+  const sameCityPairs = PAIRS.filter(p => p.from === pair.from && p !== pair);
+  const regions = [...new Set(sameCityPairs.map(p => p.region))];
 
   const groupedLinks = regions.map(region => {
-    const regionPairs = otherPairs.filter(p => p.region === region);
+    const regionPairs = sameCityPairs.filter(p => p.region === region);
     if (!regionPairs.length) return '';
     const links = regionPairs.map(p => {
       const s = `${toSlug(p.from)}-to-${toSlug(p.to)}`;
@@ -187,14 +185,25 @@ ${links}
   </div>`;
   }).join('\n');
 
-  // 7. Build footer HTML
-  const footer = `
-<footer class="site-footer">
-  <div class="footer-links-section">
-    <span class="footer-section-title">Other Time Zone Converters</span>
-    ${groupedLinks}
-  </div>
+  // 6b. Cross-links to other base cities
+  const otherBases = BASE_CITIES.filter(b => b.city !== pair.from);
+  const crossLinks = otherBases.map(b => {
+    const rep = PAIRS.find(p => p.from === b.city);
+    if (!rep) return '';
+    const s = `${toSlug(rep.from)}-to-${toSlug(rep.to)}`;
+    return `      <a href="/${s}.html">${b.city} Converters</a>`;
+  }).filter(Boolean).join('\n');
 
+  const crossLinksSection = crossLinks ? `
+  <div class="footer-region">
+    <span class="footer-links-label">Other Cities</span>
+    <div class="footer-links-grid">
+${crossLinks}
+    </div>
+  </div>` : '';
+
+  // 7. Conditional business card (Singapore pairs only)
+  const bizCardHtml = pair.from === 'Singapore' ? `
   <div class="footer-biz-card">
     <div class="biz-card-inner">
       <div class="biz-card-text">
@@ -210,10 +219,20 @@ ${links}
   <p class="footer-text-link">
     Singapore airport transfer &amp; corporate chauffeur —
     <a href="https://www.primeaceslimousine.com" target="_blank" rel="noopener">primeaceslimousine.com</a>
-  </p>
+  </p>` : '';
+
+  // 8. Build footer HTML
+  const footer = `
+<footer class="site-footer">
+  <div class="footer-links-section">
+    <span class="footer-section-title">More ${pair.from} Time Zone Converters</span>
+    ${groupedLinks}
+  </div>
+  ${crossLinksSection}
+${bizCardHtml}
 </footer>`;
 
-  // 8. Insert footer before </body>
+  // 9. Insert footer before </body>
   html = html.replace('</body>', `${footer}\n</body>`);
 
   return { slug, html };
