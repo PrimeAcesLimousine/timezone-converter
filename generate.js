@@ -202,23 +202,83 @@ ${crossLinks}
     </div>
   </div>` : '';
 
-  // 7. Conditional business card (Singapore pairs only)
-  const bizCardHtml = pair.from === 'Singapore' ? `
+  // 7. Contextual business card — varied copy, keywords & links per base city
+  const BIZ_CARDS = {
+    'Singapore': {
+      title: 'Travelling through Singapore?',
+      desc:  'Professional airport transfers &amp; corporate chauffeur service.',
+      cta:   'Prime Aces Limousine →',
+      url:   'https://www.primeaceslimousine.com',
+      foot:  'Singapore airport transfer &amp; corporate chauffeur',
+    },
+    'London': {
+      title: 'Business travel to Singapore?',
+      desc:  'Corporate chauffeur service for executives &amp; professionals in Southeast Asia.',
+      cta:   'Corporate Chauffeur Service →',
+      url:   'https://www.primeaceslimousine.com/corporate-chauffeur-service',
+      foot:  'Your corporate chauffeur partner in Southeast Asia',
+    },
+    'New York': {
+      title: 'Need a ride in Singapore?',
+      desc:  'Premium limousine service for business travellers — airport transfers &amp; city rides.',
+      cta:   'Limousine Service →',
+      url:   'https://www.primeaceslimousine.com/limousine-service',
+      foot:  'Singapore limousine service for business travellers',
+    },
+    'Tokyo': {
+      title: 'Arriving in Singapore?',
+      desc:  'Reliable airport transfer service — meet &amp; greet, corporate chauffeur &amp; hourly hire.',
+      cta:   'Airport Transfer Service →',
+      url:   'https://www.primeaceslimousine.com/airport-transfer-service',
+      foot:  'Singapore airport transfer service',
+    },
+    'Sydney': {
+      title: 'Heading to Singapore?',
+      desc:  'Your corporate chauffeur partner in Southeast Asia — airport transfers &amp; hourly service.',
+      cta:   'Prime Aces Limousine →',
+      url:   'https://www.primeaceslimousine.com',
+      foot:  'Corporate chauffeur &amp; airport transfer in Singapore',
+    },
+    'Hong Kong': {
+      title: 'Singapore-bound?',
+      desc:  'Professional limousine service &amp; airport transfers for the business traveller.',
+      cta:   'Limousine Service →',
+      url:   'https://www.primeaceslimousine.com/limousine-service',
+      foot:  'Professional limousine service in Singapore',
+    },
+    'Los Angeles': {
+      title: 'Visiting Singapore?',
+      desc:  'Event transportation, corporate chauffeur &amp; airport transfer service.',
+      cta:   'Event Transportation →',
+      url:   'https://www.primeaceslimousine.com/event-transportation-service',
+      foot:  'Event transportation &amp; chauffeur service in Singapore',
+    },
+    'Dubai': {
+      title: 'Flying through Singapore?',
+      desc:  'Premium airport transfer &amp; corporate chauffeur — your partner in Southeast Asia.',
+      cta:   'Airport Transfer Service →',
+      url:   'https://www.primeaceslimousine.com/airport-transfer-service',
+      foot:  'Premium airport transfer in Singapore',
+    },
+  };
+
+  const biz = BIZ_CARDS[pair.from];
+  const bizCardHtml = biz ? `
   <div class="footer-biz-card">
     <div class="biz-card-inner">
       <div class="biz-card-text">
-        <span class="biz-card-title">Travelling through Singapore?</span>
-        <span class="biz-card-desc">Professional airport transfers &amp; corporate chauffeur service.</span>
+        <span class="biz-card-title">${biz.title}</span>
+        <span class="biz-card-desc">${biz.desc}</span>
       </div>
-      <a href="https://www.primeaceslimousine.com" class="biz-card-link" target="_blank" rel="noopener">
-        Prime Aces Limousine →
+      <a href="${biz.url}" class="biz-card-link" target="_blank" rel="noopener">
+        ${biz.cta}
       </a>
     </div>
   </div>
 
   <p class="footer-text-link">
-    Singapore airport transfer &amp; corporate chauffeur —
-    <a href="https://www.primeaceslimousine.com" target="_blank" rel="noopener">primeaceslimousine.com</a>
+    ${biz.foot} —
+    <a href="${biz.url}" target="_blank" rel="noopener">primeaceslimousine.com</a>
   </p>` : '';
 
   // 8. Build footer HTML
