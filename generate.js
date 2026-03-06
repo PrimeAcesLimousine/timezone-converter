@@ -162,6 +162,9 @@ function generatePage(pair) {
   html = html.replace(/<!-- Clicky Tracking Code -->[\s\S]*?<!-- end of clicky code -->\n?/g, '');
   html = html.replace(/<!-- Clicky Tracking Code -->\n<script async data-id="101502427"[^<]*<\/script>\n<noscript>[\s\S]*?<\/noscript>\n?/g, '');
 
+  // Strip homepage business card sections (pair pages have their own in the footer)
+  html = html.replace(/<!-- ── Business Cards \(contextual per city\) ── -->[\s\S]*?<!-- ── ZONE PICKER SHEET ── -->/, '<!-- ── ZONE PICKER SHEET ── -->');
+
   // 5. Inject footer styles before </style>
   html = html.replace('  </style>', `${FOOTER_STYLES}\n  </style>`);
 
