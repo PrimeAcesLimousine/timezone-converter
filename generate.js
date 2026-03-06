@@ -146,16 +146,23 @@ function generatePage(pair) {
     `<meta name="keywords" content="timezone converter, ${title}" />`
   );
 
-  // 5. Pre-select My timezone (override browser detection)
+  // 5. Set default My timezone (page's from city)
   html = html.replace(
     'let myZone       = browserTz;',
-    `let myZone       = '${pair.fromId}';`
+    `let myZone    = '${pair.fromId}';`
   );
 
-  // 6. Pre-select Their timezone
+  // 6. Set default Their timezone, then run browser TZ detection with auto-swap
   html = html.replace(
     `let theirZone    = browserTz === 'America/New_York' ? 'Asia/Singapore' : 'America/New_York';`,
-    `let theirZone    = '${pair.toId}';`
+    `let theirZone = '${pair.toId}';
+(function() {
+  var _from = '${pair.fromId}', _to = '${pair.toId}';
+  var inList = TZ_LIST.find(function(t) { return t.id === browserTz; });
+  if (!inList) return;
+  if (browserTz === _to)        { myZone = _to;      theirZone = _from; }
+  else if (browserTz !== _from) { myZone = browserTz; theirZone = _from; }
+})();`
   );
 
   // 5. Inject footer styles before </style>
