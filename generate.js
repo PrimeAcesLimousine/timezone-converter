@@ -7,7 +7,7 @@ const fs   = require('fs');
 const path = require('path');
 
 const PAIRS    = require('./pairs');
-const DOMAIN   = 'https://timezoneconverter.site';
+const DOMAIN   = 'https://www.timezoneconverter.site';
 const TEMPLATE = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
