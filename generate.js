@@ -265,6 +265,21 @@ ${crossLinks}
     },
   };
 
+  // 7b. Contextual in-page link — higher on page than biz card, different URL per base city
+  const CONTEXTUAL_LINKS = {
+    'Singapore':   { text: 'Flying from Singapore?',        anchor: 'Book your airport transfer →',       url: 'https://www.primeaceslimousine.com/airport-transfer-service' },
+    'London':      { text: 'Travelling to Singapore?',      anchor: 'Book your airport transfer →',       url: 'https://www.primeaceslimousine.com/airport-transfer-service' },
+    'New York':    { text: 'Visiting Singapore?',           anchor: 'Arrange your corporate chauffeur →', url: 'https://www.primeaceslimousine.com/corporate-chauffeur-service' },
+    'Tokyo':       { text: 'Landing in Singapore?',         anchor: 'Book your limousine service →',      url: 'https://www.primeaceslimousine.com/limousine-service' },
+    'Sydney':      { text: 'Heading to Singapore?',         anchor: 'Book your corporate chauffeur →',    url: 'https://www.primeaceslimousine.com/corporate-chauffeur-service' },
+    'Hong Kong':   { text: 'Singapore-bound?',              anchor: 'Book your airport transfer →',       url: 'https://www.primeaceslimousine.com/airport-transfer-service' },
+    'Los Angeles': { text: 'Flying to Singapore?',          anchor: 'Book your limousine service →',      url: 'https://www.primeaceslimousine.com/limousine-service' },
+    'Dubai':       { text: 'Transiting through Singapore?', anchor: 'Book your event transportation →',   url: 'https://www.primeaceslimousine.com/event-transportation-service' },
+  };
+
+  const ctx = CONTEXTUAL_LINKS[pair.from];
+  const contextualHtml = ctx ? `\n<p class="contextual-link">\n  ${ctx.text} <a href="${ctx.url}" target="_blank" rel="noopener">${ctx.anchor}</a>\n</p>` : '';
+
   const biz = BIZ_CARDS[pair.from];
   const bizCardHtml = biz ? `
   <div class="footer-biz-card">
@@ -295,7 +310,12 @@ ${crossLinks}
 ${bizCardHtml}
 </footer>`;
 
-  // 9. Insert footer before </body>
+  // 9. Insert contextual link between .app and quick links
+  if (contextualHtml) {
+    html = html.replace('<!-- ── QUICK LINKS ── -->', `${contextualHtml}\n\n<!-- ── QUICK LINKS ── -->`);
+  }
+
+  // 10. Insert footer before </body>
   html = html.replace('</body>', `${footer}\n</body>`);
 
   return { slug, html };
